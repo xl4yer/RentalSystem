@@ -1,0 +1,24 @@
+﻿@using RentalSystem.Components.Pages
+@rendermode InteractiveServer
+
+<MudToolBar Class="top-row px-4">
+    <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
+    <MudIconButton Icon="@Icons.Material.Outlined.Add" />
+    <MudIconButton Icon="@Icons.Material.Outlined.Edit" />
+    <MudIconButton Icon="@Icons.Material.Outlined.Remove" />
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
+    <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt" />
+    <MudButton @onclick="Login" Variant="Variant.Filled" Color="Color.Primary">
+        Login
+    </MudButton>
+</MudToolBar>
+
+@code{
+    private Task Login()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return Dialog.ShowAsync<Login>("Login", options);
+    }
+}

@@ -2,18 +2,39 @@
 @rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
-
+<h1>@role</h1>
 <h1>Counter</h1>
 
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+
 @code {
     private int currentCount = 0;
-
+    private string role;
     private void IncrementCount()
     {
         currentCount++;
     }
+
+    public async Task Role()
+    {
+        role = await Loc.GetItemAsStringAsync("role");
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Role();
+        }
+    }
+   
 }

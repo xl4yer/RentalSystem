@@ -1,0 +1,81 @@
+﻿<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog TitleClass="mud-primary" DisableSidePadding="true">
+        <TitleContent><MudText Typo="Typo.h6" Style="color:white">Login</MudText></TitleContent>
+        <DialogContent>
+            <p>Username</p>
+            <MudTextField Clearable @bind-Value="user.UserName" For="@(() => user.UserName)" T="string" AutoFocus Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <p>Password</p>
+            <MudTextField Clearable @bind-Value="user.Password" For="@(() => user.Password)" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Disabled="@_processing" @onclick="UserLogin" Variant="Variant.Filled" Color="Color.Primary">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+
+                    <MudText Class="ms-2">Signing in...</MudText>
+                }
+                else
+                {
+                    <MudText>Sign In</MudText>
+                }
+            </MudButton>
+            @if (loginError)
+            {
+                <div style="color: red; text-align: center;">Invalid Username or Password. Please try again.</div>
+            }
+        </DialogActions>
+
+    </MudDialog>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Users user { get; set; } = new Users();
+    private bool _processing = false;
+    private string username = "";
+    private string password = "";
+    private List<Users> users;
+    private bool loginError = false; // To track login errors
+
+    private async Task UserLogin()
+    {
+        _processing = true;
+        await Task.Delay(1000);
+        loginError = false; // Reset error flag
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/User/UserLogin?username={user.UserName}&password={user.Password}");
+            if (!response.IsSuccessStatusCode) throw new Exception("API call failed");
+            var users = JsonConvert.DeserializeObject<List<Users>>(await response.Content.ReadAsStringAsync());
+            if (users?.Count > 0)
+            {
+                var user = users[0];
+                await Loc.SetItemAsStringAsync("token", user.Token);
+                await Loc.SetItemAsStringAsync("role", user.Role);
+                await Loc.SetItemAsStringAsync("name", user.UserName);
+                Nav.NavigateTo("/counter");
+            }
+            else loginError = true;
+        }
+        catch (Exception ex)
+        {
+            loginError = true;
+            Console.WriteLine($"Login error: {ex.Message}");
+        }
+    }
+
+
+    private async Task Cancel()
+    {
+
+    }
+
+    public void OnValidSubmit(EditContext context)
+    {
+
+    }
+}
