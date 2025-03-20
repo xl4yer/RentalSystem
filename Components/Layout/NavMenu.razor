@@ -1,4 +1,5 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@rendermode InteractiveServer
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">RentalSystem</a>
     </div>
@@ -25,6 +26,20 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
+
+        <div class="nav-item px-3">
+            <MudButton @onclick="Login" Variant="Variant.Filled" Color="Color.Primary">
+                Login
+            </MudButton>
+        </div>
     </nav>
 </div>
 
+@code{
+    private Task Login()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return Dialog.ShowAsync<Login>("Login", options);
+    }
+}
