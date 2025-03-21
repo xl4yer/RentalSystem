@@ -1,4 +1,6 @@
-﻿namespace RentalSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RentalSystem.Models
 {
     public class Users
     {

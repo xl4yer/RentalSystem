@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 <PageTitle>Rental Gowns</PageTitle>
 
+
 <div class="container mt-5">
     @if (gown == null || gown.Length == 0)
     {
@@ -74,6 +75,17 @@
             </div>
 
             <div class="col-sm-8">
+                <MudToolBar Class="top-row px-4">
+                    <MudSpacer />
+                    <MudTextField T="string"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  AdornmentColor="Color.Primary"
+                                  Placeholder="Search Gowns..."
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense" />
+                </MudToolBar>
+
                 <MudTable Class="ma-5" Dense Hover Items="@gown" HorizontalScrollbar FixedHeader="@fixed_header" FixedFooter="@fixed_footer" Height="@(fixed_header || fixed_footer ? "600px" : "")">
                     <HeaderContent>
                         <MudTh>Photo</MudTh>

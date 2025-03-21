@@ -74,5 +74,49 @@ namespace Pos.Services
                 return user;
             }
         }
+
+        public async Task<int> Register(Users user)
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("Register", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+
+                    // Ensure Id is not null or empty
+                    if (string.IsNullOrEmpty(user.Id))
+                    {
+                        user.Id = Guid.NewGuid().ToString();
+                    }
+
+                    com.Parameters.AddWithValue("_Id", user.Id);
+                    com.Parameters.AddWithValue("_Fname", user.Fname);
+                    com.Parameters.AddWithValue("_Mname", user.Mname);
+                    com.Parameters.AddWithValue("_Lname", user.Lname);
+                    com.Parameters.AddWithValue("_Ext", user.Ext);
+                    com.Parameters.AddWithValue("_Address", user.Address);
+                    com.Parameters.AddWithValue("_Contact", user.Contact);
+                    com.Parameters.AddWithValue("_Role", user.Role);
+                    com.Parameters.AddWithValue("_UserName", user.UserName);
+                    com.Parameters.AddWithValue("_Password", user.Password);
+                    com.Parameters.AddWithValue("_Email", user.Email);
+
+                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] Register() Exception: {ex}"); // More detailed logging
+                    return 0; // Ensure a return value even in case of failure
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+        }
     }
 }

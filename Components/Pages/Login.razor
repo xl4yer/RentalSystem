@@ -1,16 +1,16 @@
 ﻿<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-    <MudDialog TitleClass="mud-primary" DisableSidePadding="true">
+    <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
         <TitleContent><MudText Typo="Typo.h6" Style="color:white">Login</MudText></TitleContent>
         <DialogContent>
-            <p>Username</p>
-            <MudTextField Clearable @bind-Value="user.UserName" For="@(() => user.UserName)" T="string" AutoFocus Variant="Variant.Outlined" Margin="Margin.Dense" />
-            <p>Password</p>
-            <MudTextField Clearable @bind-Value="user.Password" For="@(() => user.Password)" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
-        </DialogContent>
-        <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton Disabled="@_processing" @onclick="UserLogin" Variant="Variant.Filled" Color="Color.Primary">
+            <p1>Username</p1>
+            <MudTextField Clearable Required @bind-Value="user.UserName" For="@(() => user.UserName)" T="string" AutoFocus Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <p1>Password</p1>
+            <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
+            <br />
+            <MudText Align="Align.Center">Don't' Have Account? <u><b> <MudLink Href="/registration">Register</MudLink></b></u> </MudText>
+          <br />
+            <MudButton FullWidth Disabled="@_processing" @onclick="UserLogin" Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
                 @if (_processing)
                 {
                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
@@ -22,14 +22,24 @@
                     <MudText>Sign In</MudText>
                 }
             </MudButton>
+            <br />
             @if (loginError)
             {
                 <div style="color: red; text-align: center;">Invalid Username or Password. Please try again.</div>
             }
-        </DialogActions>
+
+        </DialogContent>
+      
+           
 
     </MudDialog>
 </EditForm>
+<style>
+    .custom-dialog-title {
+        background-color: #4E3434;
+        color: white;
+    }
+</style>
 
 @code {
     [Parameter]
@@ -39,6 +49,9 @@
     private string password = "";
     private List<Users> users;
     private bool loginError = false; // To track login errors
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     private async Task UserLogin()
     {
@@ -60,14 +73,31 @@
                 Nav.NavigateTo("/counter");
             }
             else loginError = true;
+            _processing = false;
         }
         catch (Exception ex)
         {
             loginError = true;
             Console.WriteLine($"Login error: {ex.Message}");
+            _processing = false;
         }
     }
 
+    void Click()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
 
     private async Task Cancel()
     {

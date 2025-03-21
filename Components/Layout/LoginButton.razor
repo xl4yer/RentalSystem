@@ -1,0 +1,12 @@
+﻿@rendermode InteractiveServer
+
+<MudButton Style="color:white" @onclick="Login" Variant="Variant.Text">Sign In</MudButton>
+
+    @code {
+        private Task Login()
+        {
+            var options = new DialogOptions { CloseOnEscapeKey = true };
+
+            return Dialog.ShowAsync<Login>("Login", options);
+        }
+    }
