@@ -32,20 +32,25 @@ else
                         <MudSelectItem Value="@("V")" />
                     </MudSelect>
                     <p1>Address</p1>
-                    <MudTextField @bind-Value="user.Address" For="@(() => user.Address)" Lines="3" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                </div>
-                <div class="col-sm-3">
+                    <MudTextField @bind-Value="user.Address" For="@(() => user.Address)" Lines="2" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
                     <p1>Contact Number</p1>
                     <MudTextField @bind-Value="user.Contact" T="string" For="@(() => user.Contact)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </div>
+                <div class="col-sm-3">
+
                     <p1>Email</p1>
                     <MudTextField @bind-Value="user.Email" T="string" For="@(() => user.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                     <p1>Username</p1>
                     <MudTextField @bind-Value="user.UserName" T="string" For="@(() => user.UserName)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                     <p1>Password</p1>
                     <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
-                    <br /><br /><br />
+                    <br />
+                    <Captcha @bind-CaptchaWord="@captcha" CharNumber="@captchaLetters" Height="50" />
+                    <br />
+                    <MudTextField @bind-Value="inputCaptcha" Label="Enter Captcha" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField><br />
+                    <span class="text-danger">@validation</span>
                     <MudButtonGroup FullWidth>
-                        <MudButton FullWidth>Back to Home</MudButton>
+                        <MudButton FullWidth>Clear</MudButton>
                         <MudButton Disabled="@_processing" @onclick="Register" FullWidth Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
                             @if (_processing)
                             {
@@ -78,6 +83,17 @@ else
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     private string message { get; set; } = "";
+
+    //Blazor Captcha Validation
+    private string validation = "";
+    private string captcha = "";
+    private string inputCaptcha = "";
+    private int captchaLetters = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        captcha = BlazorCaptcha.Tools.GetCaptchaWord(captchaLetters);
+    }
 
     private async Task GenerateRandomNumbers()
     {
@@ -147,56 +163,40 @@ else
 
     private async Task Register()
     {
+        if (inputCaptcha != captcha)
+        {
+            validation = "Invalid Captcha";
+            return;
+        }
+
         _processing = true;
-        await GenerateRandomNumbers();
-        await Loc.SetItemAsStringAsync("randomNumbers", randomNumbers);
-        await Loc.SetItemAsStringAsync("Id", Guid.NewGuid().ToString());
-        await Loc.SetItemAsStringAsync("Fname", user.Fname);
-        await Loc.SetItemAsStringAsync("Mname", user.Mname);
-        await Loc.SetItemAsStringAsync("Lname", user.Lname);
-        await Loc.SetItemAsStringAsync("Ext", user.Ext);
-        await Loc.SetItemAsStringAsync("Address", user.Address);
-        await Loc.SetItemAsStringAsync("Contact", user.Contact);
-        await Loc.SetItemAsStringAsync("UserName", user.UserName);
-        await Loc.SetItemAsStringAsync("Password", user.Password);
-        await Loc.SetItemAsStringAsync("Email", user.Email);
-        await SendEmail();
-        await Task.Delay(2000);
-        _processing = false;
-        Nav.NavigateTo("/counter");
+        try
+        {
+            var _user = new Users
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Fname = user.Fname,
+                    Mname = user.Mname,
+                    Lname = user.Lname,
+                    Ext = user.Ext,
+                    Address = user.Address,
+                    Contact = user.Contact,
+                    Role = "User",
+                    UserName = user.UserName,
+                    Password = user.Password,
+                    Email = user.Email
+                };
 
-        // _processing = true;
-        // try
-        // {
-        //     var _user = new Users
-        //         {
-        //             Id = Guid.NewGuid().ToString(),
-        //             Fname = user.Fname,
-        //             Mname = user.Mname,
-        //             Lname = user.Lname,
-        //             Ext = user.Ext,
-        //             Address = user.Address,
-        //             Contact = user.Contact,
-        //             Role = "User",
-        //             UserName = user.UserName,
-        //             Password = user.Password,
-        //             Email = user.Email
-        //         };
+            using var http = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await http.PostAsJsonAsync("api/User/Register", _user);
+            var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
 
-        //     var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
-        //         .PostAsJsonAsync("api/User/Register", _user);
-
-        //     var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
-        //     var isSuccess = response.IsSuccessStatusCode && result > 0;
-        //     SnackBar.Add(
-        //         isSuccess ? "Done: Successfully Registered!" : $"Warning: {response.ReasonPhrase}",
-        //         isSuccess ? Severity.Success : Severity.Warning
-        //     );
-        // }
-        // catch (Exception ex)
-        // {
-        //     SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        // }
+            SnackBar.Add(result > 0 ? "Done: Successfully Registered" : "Error: Registration failed",
+                         result > 0 ? Severity.Success : Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
-
 }
