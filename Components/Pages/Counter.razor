@@ -3,11 +3,9 @@
 
 <PageTitle>Counter</PageTitle>
 <h1>@role</h1>
-<h1>@activationCode</h1>
 <h1>Counter</h1>
 
 <p role="status">Current count: @currentCount</p>
-
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 
@@ -23,7 +21,6 @@
     public async Task Role()
     {
         role = await Loc.GetItemAsStringAsync("role");
-        activationCode = await Loc.GetItemAsStringAsync("randomNumbers");
         StateHasChanged();
     }
 

@@ -1,106 +1,98 @@
-﻿@page "/registration"
+﻿
 @rendermode InteractiveServer
 
-@if (_loader == false)
-{
-    <div class="d-flex justify-content-center my-4">
-        <div class="loader"></div>
-    </div>
-}
-else
-{
-    <EditForm Model="@user" OnValidSubmit="OnValidSubmit">
-        <DataAnnotationsValidator />
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-sm-3">
-                </div>
-                <div class="col-sm-3">
-                    <p1>First Name</p1>
-                    <MudTextField @bind-Value="user.Fname" T="string" For="@(() => user.Fname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <p1>Middle Name</p1>
-                    <MudTextField @bind-Value="user.Mname" T="string" For="@(() => user.Mname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <p1>Last Name</p1>
-                    <MudTextField @bind-Value="user.Lname" T="string" For="@(() => user.Lname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <p1>Extension</p1>
-                    <MudSelect @bind-Value="@user.Ext" For="@(() => user.Ext)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                        <MudSelectItem Value="@("Sr.")" />
-                        <MudSelectItem Value="@("Jr.")" />
-                        <MudSelectItem Value="@("II")" />
-                        <MudSelectItem Value="@("III")" />
-                        <MudSelectItem Value="@("IV")" />
-                        <MudSelectItem Value="@("V")" />
-                    </MudSelect>
-                    <p1>Address</p1>
-                    <MudTextField @bind-Value="user.Address" For="@(() => user.Address)" Lines="2" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <p1>Contact Number</p1>
-                    <MudTextField @bind-Value="user.Contact" T="string" For="@(() => user.Contact)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                </div>
-                <div class="col-sm-3">
+<style>
+    .custom-dialog-title {
+    background-color: #4E3434;
+    color: white;
+    }
+</style>
 
-                    <p1>Email</p1>
-                    <MudTextField @bind-Value="user.Email" T="string" For="@(() => user.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <p1>Username</p1>
-                    <MudTextField @bind-Value="user.UserName" T="string" For="@(() => user.UserName)" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <p1>Password</p1>
-                    <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
-                    <br />
-                    <Captcha @bind-CaptchaWord="@captcha" CharNumber="@captchaLetters" Height="50" />
-                    <br />
-                    <MudTextField @bind-Value="inputCaptcha" Label="Enter Captcha" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField><br />
-                    <span class="text-danger">@validation</span>
-                    <MudButtonGroup FullWidth>
-                        <MudButton FullWidth>Clear</MudButton>
-                        <MudButton Disabled="@_processing" @onclick="Register" FullWidth Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
-                            @if (_processing)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
+        <TitleContent><MudText Typo="Typo.h6" Style="color:white">Register New Account</MudText></TitleContent>
+        <DialogContent>
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p1>First Name</p1>
+                        <MudTextField @bind-Value="user.Fname"  T="string" For="@(() => user.Fname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <p1>Middle Name</p1>
+                        <MudTextField @bind-Value="user.Mname" T="string" For="@(() => user.Mname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <p1>Last Name</p1>
+                        <MudTextField @bind-Value="user.Lname" T="string" For="@(() => user.Lname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <p1>Extension</p1>
+                        <MudSelect @bind-Value="@user.Ext" For="@(() => user.Ext)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                            <MudSelectItem Value="@("Sr.")" />
+                            <MudSelectItem Value="@("Jr.")" />
+                            <MudSelectItem Value="@("II")" />
+                            <MudSelectItem Value="@("III")" />
+                            <MudSelectItem Value="@("IV")" />
+                            <MudSelectItem Value="@("V")" />
+                        </MudSelect>
+                        <p1>Address</p1>
+                        <MudTextField @bind-Value="user.Address" For="@(() => user.Address)" Lines="2" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <p1>Contact Number</p1>
+                        <MudTextField @bind-Value="user.Contact" T="string" For="@(() => user.Contact)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    </div>
+                    <div class="col-sm-6">
+                        <p1>Email</p1>
+                        <MudTextField @bind-Value="user.Email" InputType="InputType.Email" T="string" For="@(() => user.Email)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <p1>Username</p1>
+                        <MudTextField @bind-Value="user.UserName" T="string" For="@(() => user.UserName)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <p1>Password</p1>
+                        <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
+                        <br />
+                        <Captcha @bind-CaptchaWord="@captcha" CharNumber="@captchaLetters" Height="50" />
+                        <br />
+                        <p1>Enter Captcha</p1>
+                        <MudTextField @bind-Value="inputCaptcha" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField><br />
+                        <span class="text-danger">@validation</span>
+                        <br />
+                        <MudButtonGroup FullWidth>
+                            <MudButton FullWidth>Clear</MudButton>
+                            <MudButton Disabled="@_processing" @onclick="Register" FullWidth Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
+                                @if (_processing)
+                                {
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
 
-                                <MudText Class="ms-2">Please Wait...</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Register</MudText>
-                            }
-                        </MudButton>
-                    </MudButtonGroup>
-                </div>
-                <div class="col-sm-3">
+                                    <MudText Class="ms-2">Please Wait...</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>Register</MudText>
+                                }
+                            </MudButton>
+                        </MudButtonGroup>
+                    </div>
                 </div>
             </div>
-        </div>
-    </EditForm>
-}
-
+            <br />
+            <MudText Align="Align.Center">Already Have an Account? <u><b> <MudLink @onclick="Login">Login</MudLink></b></u> </MudText>
+        </DialogContent>
+    </MudDialog>
+</EditForm>
 
 @code {
     [Parameter]
     public Users user { get; set; } = new Users();
     private bool _processing = false;
     private bool _loader = false;
-    public string randomNumbers = "";
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     private string message { get; set; } = "";
-
     //Blazor Captcha Validation
     private string validation = "";
     private string captcha = "";
     private string inputCaptcha = "";
     private int captchaLetters = 5;
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         captcha = BlazorCaptcha.Tools.GetCaptchaWord(captchaLetters);
-    }
-
-    private async Task GenerateRandomNumbers()
-    {
-        Random random = new Random();
-        int randomNumber = random.Next(1000, 10000);
-
-        randomNumbers = $"{randomNumber}";
     }
 
     public void OnValidSubmit(EditContext context)
@@ -131,36 +123,12 @@ else
         }
     }
 
-    private async Task SendEmail()
+    private Task Login()
     {
-        try
-        {
-            var httpClient = new HttpClient();
-            var content = new FormUrlEncodedContent(new[]
-            {
-            new KeyValuePair<string, string>("toAddress", $"{user.Email}"),
-            new KeyValuePair<string, string>("subject", "Activation Code"),
-            new KeyValuePair<string, string>("body", $"{randomNumbers}")
-        });
-
-            var response = await httpClient.PostAsync($"{Nav.BaseUri}SendEmail", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                message = "Message Sent";
-            }
-            else
-            {
-                message = "Failed to send message";
-            }
-        }
-        catch (Exception ex)
-        {
-            message = $"{ex.Message}";
-        }
+        MudDialog.Close();
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        return Dialog.ShowAsync<Login>("Login", options);
     }
-
-
     private async Task Register()
     {
         if (inputCaptcha != captcha)
@@ -168,8 +136,8 @@ else
             validation = "Invalid Captcha";
             return;
         }
-
         _processing = true;
+        await Task.Delay(1500);
         try
         {
             var _user = new Users
@@ -193,6 +161,8 @@ else
 
             SnackBar.Add(result > 0 ? "Done: Successfully Registered" : "Error: Registration failed",
                          result > 0 ? Severity.Success : Severity.Error);
+            _processing = false;
+            MudDialog.Close();
         }
         catch (Exception ex)
         {

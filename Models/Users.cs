@@ -4,18 +4,18 @@ namespace RentalSystem.Models
 {
     public class Users
     {
-        public string Id { get; set; } = string.Empty;
-        public string Fname { get; set; } = string.Empty;
-        public string Mname { get; set; } = string.Empty;
-        public string Lname { get; set; } = string.Empty;
-        public string Ext { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public string Contact { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-        public string UserName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Token { get; set; } = string.Empty;
+        public string Id { get; set; } = "";
+        public string Fname { get; set; } = "";
+        public string Mname { get; set; } = "";
+        public string Lname { get; set; } = "";
+        public string Ext { get; set; } = "";
+        public string Address { get; set; } = "";
+        public string Contact { get; set; } = "";
+        public string Role { get; set; } = "";
+        public string UserName { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Token { get; set; } = "";
     }
 
 }

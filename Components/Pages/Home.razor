@@ -2,7 +2,6 @@
 @rendermode InteractiveServer
 <PageTitle>Rental Gowns</PageTitle>
 
-
 <div class="container mt-5">
     @if (gown == null || gown.Length == 0)
     {
@@ -24,7 +23,7 @@
                         </MudFileUpload>
                         <br />
                         <MudText Align="Align.Left">Gown Name</MudText>
-                        <MudTextField  @bind-Value="@_gowns.Name" Clearable For="@(() => _gowns.Name)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <MudTextField  @bind-Value="@_gowns.Name" For="@(() => _gowns.Name)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         <MudText Align="Align.Left">Gown Type</MudText>
                         <MudSelect @bind-Value="@_gowns.Type" For="@(() => _gowns.Type)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
                             <MudSelectItem Value="@("Bridal")" />
@@ -64,7 +63,7 @@
                             <MudSelectItem Value="@("XXL")" />
                         </MudSelect>
                         <MudText Align="Align.Left">Rental Fee</MudText>
-                        <MudTextField @bind-Value="@_gowns.Fee" Clearable For="@(() => _gowns.Fee)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        <MudNumericField @bind-Value="@_gowns.Fee" For="@(() => _gowns.Fee)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                     </MudContainer>
                     <MudToolBar>
                         <MudSpacer />

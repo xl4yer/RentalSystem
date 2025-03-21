@@ -1,4 +1,11 @@
-﻿<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
+﻿<style>
+    .custom-dialog-title {
+        background-color: #4E3434;
+        color: white;
+    }
+</style>
+
+<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
         <TitleContent><MudText Typo="Typo.h6" Style="color:white">Login</MudText></TitleContent>
@@ -8,8 +15,8 @@
             <p1>Password</p1>
             <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
             <br />
-            <MudText Align="Align.Center">Don't' Have Account? <u><b> <MudLink Href="/registration">Register</MudLink></b></u> </MudText>
-          <br />
+            <MudText Align="Align.Center">Don't' Have Account? <u><b> <MudLink  @onclick="Register">Register</MudLink></b></u> </MudText>
+            <br />
             <MudButton FullWidth Disabled="@_processing" @onclick="UserLogin" Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
                 @if (_processing)
                 {
@@ -29,17 +36,9 @@
             }
 
         </DialogContent>
-      
-           
-
     </MudDialog>
 </EditForm>
-<style>
-    .custom-dialog-title {
-        background-color: #4E3434;
-        color: white;
-    }
-</style>
+
 
 @code {
     [Parameter]
@@ -52,6 +51,7 @@
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
 
     private async Task UserLogin()
     {
@@ -102,6 +102,13 @@
     private async Task Cancel()
     {
 
+    }
+
+    private  Task Register()
+    {
+        MudDialog.Close();
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        return Dialog.ShowAsync<Registration>("Register", options);
     }
 
     public void OnValidSubmit(EditContext context)
