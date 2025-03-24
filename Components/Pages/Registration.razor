@@ -44,7 +44,11 @@
                         <p1>Password</p1>
                         <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
                         <br />
-                        <Captcha @bind-CaptchaWord="@captcha" CharNumber="@captchaLetters" Height="50" />
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <Captcha @bind-CaptchaWord="@captcha" CharNumber="@captchaLetters" Height="50" />
+                            <MudIconButton @onclick="NewCaptcha" Icon="@Icons.Material.Filled.Refresh"/>
+                        </div>
+
                         <br />
                         <p1>Enter Captcha</p1>
                         <MudTextField @bind-Value="inputCaptcha" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField><br />
@@ -91,6 +95,11 @@
     [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
 
     protected override async Task OnInitializedAsync()
+    {
+        captcha = BlazorCaptcha.Tools.GetCaptchaWord(captchaLetters);
+    }
+
+    private void NewCaptcha()
     {
         captcha = BlazorCaptcha.Tools.GetCaptchaWord(captchaLetters);
     }

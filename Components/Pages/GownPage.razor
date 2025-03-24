@@ -12,12 +12,7 @@
     }
     else
     {
-        <MudAppBar Elevation="4" Style="background-color:#4E3434; color: white">
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-            <MudText Align="Align.Left" Class="font-bold">V.O.W</MudText>
-            <MudSpacer />
-            <LoginButton />
-        </MudAppBar>
+      <NewNavMenu/>
 
         <MudGrid Class="mt-3" Justify="Justify.Center">
             <MudItem xs="12" sm="4">
@@ -51,7 +46,7 @@
 
                         <MudText Align="Align.Left">Gown Size</MudText>
                         <MudSelect @bind-Value="@_gowns.Size" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var size in new[] { "Kids - Size", "XS - Size", "S - Size", "M - Size", "L - Size", "XL - Size", "XXL - Size" })
+                            @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
                             {
                                 <MudSelectItem Value="@size" />
                             }
@@ -69,7 +64,6 @@
                     </MudToolBar>
                 </EditForm>
             </MudItem>
-
             <MudItem xs="12" sm="8">
                 <MudToolBar Class="top-row px-3">
                     <MudSpacer />
@@ -82,19 +76,19 @@
                                   Margin="Margin.Dense" />
                 </MudToolBar>
 
-                <MudTable Class="ma-3" Dense Hover Items="@gown" HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                <MudTable Class="ma-3" Dense Hover Items="@gown"
+                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                     <HeaderContent>
-                        <MudTh>Photo</MudTh>
-                        <MudTh>Gown Name</MudTh>
-                        <MudTh>Type</MudTh>
-                        <MudTh>Color</MudTh>
-                        <MudTh>Size</MudTh>
-                        <MudTh>Rental Fee</MudTh>
-                        <MudTh>Action</MudTh>
+                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Action" })
+                        {
+                            <MudTh>@header</MudTh>
+                        }
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 100px;" />
+                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
+                                 class="img-thumbnail rounded"
+                                 style="max-width: 100px;" />
                         </MudTd>
                         <MudTd>@context.Name</MudTd>
                         <MudTd>@context.Type</MudTd>
@@ -102,11 +96,15 @@
                         <MudTd>@context.Size</MudTd>
                         <MudTd>@context.Fee</MudTd>
                         <MudTd>
-                            <MudFab Style="background-color:#4E3434; color:white" @onclick="(e => Update(context.Id))" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" />
+                            <MudFab Style="background-color:#4E3434; color:white"
+                                    @onclick="() => Update(context.Id)"
+                                    StartIcon="@Icons.Material.Filled.Edit"
+                                    Size="Size.Small" />
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
             </MudItem>
+
         </MudGrid>
     }
 </div>
