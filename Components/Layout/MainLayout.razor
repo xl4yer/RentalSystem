@@ -10,17 +10,9 @@
 <MudSnackbarProvider @rendermode="RenderMode.InteractiveServer" />
 
 <div class="page">
- @*    <div class="sidebar">
-        <NavMenu />
-    </div> *@
     <main>
-        <MudToolBar Style="background-color:#4E3434; color: white" class="top-row px-4">
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-            <MudText Align="Align.Left"><b>V.O.W</b></MudText>
-            <MudSpacer />
-            <LoginButton />
-        </MudToolBar>
         <article class="content px-4">
+            <br /><br />
             @Body
         </article>
     </main>

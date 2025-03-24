@@ -70,7 +70,7 @@
                 await Loc.SetItemAsStringAsync("token", user.Token);
                 await Loc.SetItemAsStringAsync("role", user.Role);
                 await Loc.SetItemAsStringAsync("name", user.UserName);
-                Nav.NavigateTo("/counter");
+                Nav.NavigateTo("/gowns");
             }
             else loginError = true;
             _processing = false;
