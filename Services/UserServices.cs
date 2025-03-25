@@ -61,6 +61,7 @@ namespace Pos.Services
                     {
                         Subject = new ClaimsIdentity(new Claim[]
                         {
+                    new Claim (ClaimTypes.Role.ToString(),user[0].Role),
                     new Claim (JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                         }),
                         Expires = DateTime.UtcNow.AddDays(1),

@@ -12,7 +12,7 @@
     }
     else
     {
-      <NewNavMenu/>
+        <NewNavMenu/>
 
         <MudGrid Class="mt-3" Justify="Justify.Center">
             <MudItem xs="12" sm="4">
@@ -68,16 +68,16 @@
                 <MudToolBar Class="top-row px-3">
                     <MudSpacer />
                     <MudTextField T="string"
-                                  Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search"
-                                  AdornmentColor="Color.Primary"
-                                  Placeholder="Search Gowns..."
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense" />
+                    Adornment="Adornment.End"
+                    AdornmentIcon="@Icons.Material.Filled.Search"
+                    AdornmentColor="Color.Primary"
+                    Placeholder="Search Gowns..."
+                    Variant="Variant.Outlined"
+                    Margin="Margin.Dense" />
                 </MudToolBar>
 
                 <MudTable Class="ma-3" Dense Hover Items="@gown"
-                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                     <HeaderContent>
                         @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Action" })
                         {
@@ -87,8 +87,8 @@
                     <RowTemplate>
                         <MudTd>
                             <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
-                                 class="img-thumbnail rounded"
-                                 style="max-width: 100px;" />
+                            class="img-thumbnail rounded"
+                            style="max-width: 100px;" />
                         </MudTd>
                         <MudTd>@context.Name</MudTd>
                         <MudTd>@context.Type</MudTd>
@@ -97,21 +97,18 @@
                         <MudTd>@context.Fee</MudTd>
                         <MudTd>
                             <MudFab Style="background-color:#4E3434; color:white"
-                                    @onclick="() => Update(context.Id)"
-                                    StartIcon="@Icons.Material.Filled.Edit"
-                                    Size="Size.Small" />
+                            @onclick="() => Update(context.Id)"
+                            StartIcon="@Icons.Material.Filled.Edit"
+                            Size="Size.Small" />
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
             </MudItem>
-
         </MudGrid>
-    }
-</div>
-
 
 @code {
     private Gowns[]? gown;
+    private Reservation[]? reservation;
     [Parameter] public Gowns _gowns { get; set; } = new Gowns();
     [Parameter] public Image _image { get; set; } = new Image();
     bool fixed_header = true;
@@ -122,6 +119,7 @@
     [Parameter]
     public byte[] _photo { get; set; } = null;
     IList<IBrowserFile> files = new List<IBrowserFile>();
+    public Position Position { get; set; } = Position.Left;
 
     private async Task Submit()
     {
@@ -193,7 +191,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender) await LoadProduct();
+        if (firstRender)
+            await LoadGown();
+        await LoadReservation();
     }
 
     private async Task Update(string id)
@@ -212,7 +212,7 @@
 
     }
 
-    private async Task LoadProduct()
+    private async Task LoadGown()
     {
         try
         {
@@ -230,7 +230,23 @@
         }
     }
 
+    private async Task LoadReservation()
+    {
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync("api/Reservation/Reservations");
+            if (!response.IsSuccessStatusCode) return;
 
+            await Task.Delay(1000);
+            reservation = JsonConvert.DeserializeObject<Reservation[]>(await response.Content.ReadAsStringAsync());
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
 
     public void OnValidSubmit(EditContext context)
     {

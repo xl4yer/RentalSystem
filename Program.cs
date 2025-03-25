@@ -7,6 +7,7 @@ using Pos.Services;
 using RentalSystem.Class;
 using RentalSystem.Components;
 using RentalSystem.Services;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddTransient<AppDb>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<GownServices>();
+builder.Services.AddTransient<ReservationServices>();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddCors(options =>
@@ -36,6 +38,7 @@ builder.Services.Configure<AppSettings>(appSettingsSection);
 
 var appSettings = appSettingsSection.Get<AppSettings>();
 var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -56,6 +59,22 @@ builder.Services.AddAuthentication(options =>
 
     };
 
+});
+
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("Admin", policy => {
+        policy.RequireClaim(ClaimTypes.Role, "Admin");
+
+    });
+    options.AddPolicy("User", policy => {
+        policy.RequireClaim(ClaimTypes.Role, "User");
+    });
+
+    options.AddPolicy("AdminUser", policy => {
+        policy.RequireAssertion(context =>
+        context.User.HasClaim(ClaimTypes.Role, "User") ||
+        context.User.HasClaim(ClaimTypes.Role, "Admin"));
+    });
 });
 
 var app = builder.Build();

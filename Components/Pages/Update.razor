@@ -22,41 +22,24 @@
                 <MudTextField @bind-Value="@_gowns.Name" For="@(() => _gowns.Name)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 <MudText Align="Align.Left">Gown Type</MudText>
                 <MudSelect @bind-Value="@_gowns.Type" For="@(() => _gowns.Type)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                    <MudSelectItem Value="@("Bridal")" />
-                    <MudSelectItem Value="@("Debut")" />
-                    <MudSelectItem Value="@("Filipininia")" />
-                    <MudSelectItem Value="@("Prom")" />
-                    <MudSelectItem Value="@("Prenup & Photoshoots")" />
-                    <MudSelectItem Value="@("Sponsors")" />
-                    <MudSelectItem Value="@("Maternity")" />
+                    @foreach (var type in new[] { "Bridal", "Debut", "Filipininia", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
+                    {
+                        <MudSelectItem Value="@type" />
+                    }
                 </MudSelect>
                 <MudText Align="Align.Left">Gown Color</MudText>
                 <MudSelect @bind-Value="@_gowns.Color" For="@(() => _gowns.Color)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                    <MudSelectItem Value="@("Black")" />
-                    <MudSelectItem Value="@("Blue")" />
-                    <MudSelectItem Value="@("Brown")" />
-                    <MudSelectItem Value="@("Cream")" />
-                    <MudSelectItem Value="@("Gold")" />
-                    <MudSelectItem Value="@("Gray and Silver")" />
-                    <MudSelectItem Value="@("Green")" />
-                    <MudSelectItem Value="@("Orange")" />
-                    <MudSelectItem Value="@("Pink")" />
-                    <MudSelectItem Value="@("Nude and Skintone")" />
-                    <MudSelectItem Value="@("Red")" />
-                    <MudSelectItem Value="@("Teal")" />
-                    <MudSelectItem Value="@("Violet and Purple")" />
-                    <MudSelectItem Value="@("White")" />
-                    <MudSelectItem Value="@("Yellow")" />
+                    @foreach (var color in new[] { "Black", "Blue", "Brown", "Cream", "Gold", "Gray and Silver", "Green", "Orange", "Pink", "Nude and Skintone", "Red", "Teal", "Violet and Purple", "White", "Yellow" })
+                    {
+                        <MudSelectItem Value="@color" />
+                    }
                 </MudSelect>
                 <MudText Align="Align.Left">Gown Size</MudText>
                 <MudSelect @bind-Value="@_gowns.Size" For="@(() => _gowns.Size)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                    <MudSelectItem Value="@("Kids - Size")" />
-                    <MudSelectItem Value="@("XS - Size")" />
-                    <MudSelectItem Value="@("S - Size")" />
-                    <MudSelectItem Value="@("M - Size")" />
-                    <MudSelectItem Value="@("L - Size")" />
-                    <MudSelectItem Value="@("XL - Size")" />
-                    <MudSelectItem Value="@("XXL")" />
+                    @foreach (var size in new[] { "Kids - Size", "XS - Size", "S - Size", "M - Size", "L - Size", "XL - Size", "XXL" })
+                    {
+                        <MudSelectItem Value="@size" />
+                    }
                 </MudSelect>
                 <MudText Align="Align.Left">Rental Fee</MudText>
                 <MudNumericField @bind-Value="@_gowns.Fee" For="@(() => _gowns.Fee)" Variant="Variant.Outlined" Margin="Margin.Dense" />
@@ -64,7 +47,7 @@
             <MudToolBar>
                 <MudSpacer />
                 <MudButton FullWidth>Cancel</MudButton>
-                <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Submit</MudButton>
+                <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Update</MudButton>
             </MudToolBar>
         </DialogContent>
     </MudDialog>
