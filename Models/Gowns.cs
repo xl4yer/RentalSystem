@@ -9,5 +9,6 @@
         public string Color { get; set; } = "";
         public string Size { get; set; } = "";
         public double Fee { get; set; }
+        public string Status { get; set; } = "";
     }
 }

@@ -13,7 +13,6 @@
     else
     {
         <NewNavMenu/>
-
         <MudGrid Class="mt-3" Justify="Justify.Center">
             <MudItem xs="12" sm="4">
                 <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
@@ -21,7 +20,7 @@
                     <MudContainer Style="max-height: 600px;">
                         <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
                             <ActivatorContent>
-                                <img src="@imgsrc" class="img-fluid img-thumbnail rounded mt-2" style="max-width: 200px;" />
+                                <img src="@imgsrc" width="200" height="200" style="border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
                             </ActivatorContent>
                         </MudFileUpload>
 
@@ -70,7 +69,7 @@
                     <MudTextField T="string"
                     Adornment="Adornment.End"
                     AdornmentIcon="@Icons.Material.Filled.Search"
-                    AdornmentColor="Color.Primary"
+                    AdornmentColor="Color.Dark"
                     Placeholder="Search Gowns..."
                     Variant="Variant.Outlined"
                     Margin="Margin.Dense" />
@@ -79,7 +78,7 @@
                 <MudTable Class="ma-3" Dense Hover Items="@gown"
                 HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                     <HeaderContent>
-                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Action" })
+                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Status", "Action" })
                         {
                             <MudTh>@header</MudTh>
                         }
@@ -96,6 +95,20 @@
                         <MudTd>@context.Size</MudTd>
                         <MudTd>@context.Fee</MudTd>
                         <MudTd>
+                            @if (context.Status == "Available")
+                            {
+                                <MudChip T="string" Color="Color.Success">@context.Status</MudChip>
+                            }
+                            else if (context.Status == "Reserved")
+                            {
+                                <MudChip T="string" Color="Color.Warning">@context.Status</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Color="Color.Info">@context.Status</MudChip>
+                            }
+                        </MudTd>
+                        <MudTd>
                             <MudFab Style="background-color:#4E3434; color:white"
                             @onclick="() => Update(context.Id)"
                             StartIcon="@Icons.Material.Filled.Edit"
@@ -106,18 +119,75 @@
             </MudItem>
         </MudGrid>
 
+        <br/>
+
+        <MudTabs Centered Color="Color.Dark">
+            <MudTabPanel Text="Reservations">
+                <MudTable Class="ma-3" Dense Hover Items="@reservation"
+                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                    <HeaderContent>
+                        @foreach (var header in new[] { "Customer Name","Photo",  "Gown Name", "Color", "Size"})
+                        {
+                            <MudTh>@header</MudTh>
+                        }
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Fullname</MudTd>
+                        <MudTd>
+                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
+                                 class="img-thumbnail rounded"
+                                 style="max-width: 100px;" />
+                        </MudTd>
+                        <MudTd>@context.Name</MudTd>
+                        <MudTd>@context.Color</MudTd>
+                       <MudTd>@context.Size</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Rental">
+                <MudTable Class="ma-3" Dense Hover Items="@reservation"
+                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                    <HeaderContent>
+                        @foreach (var header in new[] { "Customer Name", "Photo", "Gown Name", "Color", "Size" })
+                        {
+                            <MudTh>@header</MudTh>
+                        }
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Fullname</MudTd>
+                        <MudTd>
+                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
+                                 class="img-thumbnail rounded"
+                                 style="max-width: 100px;" />
+                        </MudTd>
+                        <MudTd>@context.Name</MudTd>
+                        <MudTd>@context.Color</MudTd>
+                        <MudTd>@context.Size</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+        </MudTabs>
+
+       }
+       </div>
+
+
+<style>
+    .custom-dialog-title {
+        background-color: #4E3434;
+        color: white;
+    }
+</style>
+
 @code {
     private Gowns[]? gown;
     private Reservation[]? reservation;
-    [Parameter] public Gowns _gowns { get; set; } = new Gowns();
-    [Parameter] public Image _image { get; set; } = new Image();
-    bool fixed_header = true;
-    bool fixed_footer = false;
+    [Parameter] public Gowns _gowns { get; set; } = new();
+    [Parameter] public Image _image { get; set; } = new();
+    bool fixed_header = true, fixed_footer = false;
     public string imgsrc { get; set; } = "";
-    [Parameter]
-    public byte[] _filebytes { get; set; } = null;
-    [Parameter]
-    public byte[] _photo { get; set; } = null;
+    [Parameter] public byte[] _filebytes { get; set; } = null!;
+    [Parameter] public byte[] _photo { get; set; } = null!;
     IList<IBrowserFile> files = new List<IBrowserFile>();
     public Position Position { get; set; } = Position.Left;
 
@@ -133,7 +203,8 @@
                     Type = _gowns.Type,
                     Color = _gowns.Color,
                     Size = _gowns.Size,
-                    Fee = _gowns.Fee
+                    Fee = _gowns.Fee,
+                    Status = "Available"
                 };
             var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
                 .PostAsJsonAsync("api/Gown/AddGown", gown);
@@ -193,7 +264,7 @@
     {
         if (firstRender)
             await LoadGown();
-        await LoadReservation();
+            await LoadReservation();
     }
 
     private async Task Update(string id)

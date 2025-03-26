@@ -43,6 +43,7 @@ namespace RentalSystem.Services
                             Color = rdr["Color"].ToString(),
                             Size = rdr["Size"].ToString(),
                             Fee = Convert.ToDouble(rdr["Fee"]),
+                            Status = rdr["Status"].ToString()
                         });
                     }
                     await rdr.CloseAsync().ConfigureAwait(false);
@@ -77,6 +78,7 @@ namespace RentalSystem.Services
                     com.Parameters.AddWithValue("_Color", gown.Color);
                     com.Parameters.AddWithValue("_Size", gown.Size);
                     com.Parameters.AddWithValue("_Fee", gown.Fee);
+                    com.Parameters.AddWithValue("_Status", gown.Status);
                     return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -109,6 +111,7 @@ namespace RentalSystem.Services
                     com.Parameters.AddWithValue("_Color", gown.Color);
                     com.Parameters.AddWithValue("_Size", gown.Size);
                     com.Parameters.AddWithValue("_Fee", gown.Fee);
+                    com.Parameters.AddWithValue("_Status", gown.Status);
                     return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)

@@ -11,7 +11,7 @@
     <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
         <TitleContent><MudText Typo="Typo.h6" Style="color:white">Update</MudText></TitleContent>
         <DialogContent>
-            <MudContainer Style="max-height: 600px;">
+            <MudContainer Style="max-height: 650px;">
                 <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
                     <ActivatorContent>
                         <img src="@imgsrc" width="200" height="200" style="border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
@@ -36,13 +36,21 @@
                 </MudSelect>
                 <MudText Align="Align.Left">Gown Size</MudText>
                 <MudSelect @bind-Value="@_gowns.Size" For="@(() => _gowns.Size)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                    @foreach (var size in new[] { "Kids - Size", "XS - Size", "S - Size", "M - Size", "L - Size", "XL - Size", "XXL" })
+                    @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
                     {
                         <MudSelectItem Value="@size" />
                     }
                 </MudSelect>
                 <MudText Align="Align.Left">Rental Fee</MudText>
                 <MudNumericField @bind-Value="@_gowns.Fee" For="@(() => _gowns.Fee)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+
+                <MudText Align="Align.Left">Status</MudText>
+                <MudSelect @bind-Value="@_gowns.Status" For="@(() => _gowns.Status)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                    @foreach (var status in new[] { "Available", "Reserved", "Rented"})
+                    {
+                        <MudSelectItem Value="@status" />
+                    }
+                </MudSelect>
             </MudContainer>
             <MudToolBar>
                 <MudSpacer />
