@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 <PageTitle>Rental Gowns</PageTitle>
 
+<NewNavMenu/>
 
 <div class="container mt-5">
     @if (gown == null || gown.Length == 0)
@@ -12,7 +13,7 @@
     }
     else
     {
-        <NewNavMenu/>
+
         <MudGrid Class="mt-3" Justify="Justify.Center">
             <MudItem xs="12" sm="4">
                 <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">

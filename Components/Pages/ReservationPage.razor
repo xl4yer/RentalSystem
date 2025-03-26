@@ -25,6 +25,8 @@
     } */
 </style>
 
+<NewNavMenu />
+
 <div class="container">
     @if (gowns == null || gowns.Length == 0)
     {
@@ -34,7 +36,7 @@
     }
     else
     {
-        <NewNavMenu/>
+
         <br />
         <div class="row row-cols-1 row-cols-md-6 g-4">
             @foreach (var gown in gowns.Take(currentIndex))
