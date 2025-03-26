@@ -98,21 +98,14 @@
     {
         try
         {
-            using (var client = new HttpClient())
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync("api/Gown/Gowns");
+
+            if (response.IsSuccessStatusCode)
             {
-                client.BaseAddress = new Uri($"{Nav.BaseUri}");
-                var response = await client.GetAsync($"api/Gown/Gowns");
-                if (response.IsSuccessStatusCode)
-                {
-                    await Task.Delay(1000);
-                    var contentResponse = await response.Content.ReadAsStringAsync();
-                    gowns = JsonConvert.DeserializeObject<Gowns[]>(contentResponse);
-                    StateHasChanged();
-                }
-                else
-                {
-                    // Handle error
-                }
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -120,6 +113,7 @@
             // Handle exception
         }
     }
+
 
     private async void loadMore()
     {
