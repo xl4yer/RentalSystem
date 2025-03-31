@@ -1,40 +1,31 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
 
-<PageTitle>Counter</PageTitle>
-<h1>@role</h1>
-<h1>Counter</h1>
-
-<p role="status">Current count: @currentCount</p>
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
+<MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer(Anchor.Start))">Start</MudButton>
+<MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer(Anchor.End))">End</MudButton>
+<MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer(Anchor.Top))">Top</MudButton>
+<MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer(Anchor.Bottom))">Bottom</MudButton>
+<MudSwitch @bind-Value="_overlayAutoClose" Label="Overlay Autoclose" Color="Color.Secondary" />
+<MudDrawer @bind-Open="@_open" Anchor="@_anchor" Elevation="1" Variant="@DrawerVariant.Temporary" OverlayAutoClose="@_overlayAutoClose">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">My App</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Match="NavLinkMatch.All">Store</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All">Library</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All">Community</MudNavLink>
+        <MudNavLink OnClick="_ => _open = false">Close Drawer</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
 
 @code {
-    private int currentCount = 0;
-    private string role;
-    private string activationCode;
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+    private bool _open;
+    private Anchor _anchor;
+    private bool _overlayAutoClose = true;
 
-    public async Task Role()
+    private void OpenDrawer(Anchor anchor)
     {
-        role = await Loc.GetItemAsStringAsync("role");
-        StateHasChanged();
+        _open = true;
+        _anchor = anchor;
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Role();
-        }
-    }
-   
 }

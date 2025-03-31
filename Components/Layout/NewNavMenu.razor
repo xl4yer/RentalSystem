@@ -1,8 +1,28 @@
-﻿  <MudAppBar Elevation="4" Style="background-color:#4E3434; color: white">
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-            <MudText Align="Align.Left" Class="font-bold">V.O.W</MudText>
-            <MudSpacer />
-            <LoginButton />
-    <a href="reservation" style="color:white; text-decoration:underline">Available Gowns</a>
-        </MudAppBar>
+﻿<MudLayout Style="background-color: #ffffff">
+    <MudAppBar Elevation="1" Style="background-color:#4E3434;">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
+        <MudSpacer />
+        <LoginButton />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_open" Breakpoint="Breakpoint.Sm" Elevation="1" Variant="DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">My App</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Match="NavLinkMatch.All">Store</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All">Library</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All">Community</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Class="pt-6 px-3">
+    </MudMainContent>
+</MudLayout>
 
+@code {
+    private bool _open = false;
+
+    private void ToggleDrawer()
+    {
+        // _open = !_open;
+    }
+}

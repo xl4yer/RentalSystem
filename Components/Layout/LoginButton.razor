@@ -14,7 +14,8 @@ else
     private string token;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender) token = await Loc.GetItemAsStringAsync("token"); StateHasChanged();
+        if (firstRender) token = await Loc.GetItemAsStringAsync("token"); 
+        StateHasChanged();
     }
 
     private Task Login()

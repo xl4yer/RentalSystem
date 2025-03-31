@@ -1,4 +1,4 @@
-﻿@page "/reservation"
+﻿@page "/availablegowns"
 @rendermode InteractiveServer
 
 <style>
@@ -48,7 +48,7 @@
                             <h5 class="card-title">Name: @gown.Name</h5>
                             <h6>Size: @gown.Size</h6>
                             <p>Color: @gown.Color</p>
-                            <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Color="Color.Info">Reserve Now</MudButton>
+                            <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Style="background-color:#4E3434; color:white">Reserve Now</MudButton>
                         </div>
 
                     </div>
@@ -63,7 +63,7 @@
         {
             <center>
                 <div>
-                    <MudButton Disabled="@_loading" OnClick="loadMore" Variant="Variant.Filled" Color="Color.Dark">
+                    <MudButton Disabled="@_loading" OnClick="loadMore" Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
                         @if (_loading)
                         {
                             <div class="loader"></div>
@@ -85,27 +85,41 @@
     private const int PageSize = 12;
     private bool _loading = false;
     private string txtsearch { get; set; } = string.Empty;
+    private string token;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await LoadGown();
+            token = await Loc.GetItemAsStringAsync("token");
+            StateHasChanged();
         }
     }
+
     private async Task ReserveNow(string Id)
     {
-        var parameters = new DialogParameters();
-        var update = gowns.FirstOrDefault(_ => _.Id == Id);
-        parameters.Add("_gowns", update);
+        @if (token == null)
+        {
+            var parameters = new DialogParameters();
+            var dialog = await Dialog.Show<Login>("Add New Client").Result;
 
-        var options = new DialogOptions
-            {
-                MaxWidth = MaxWidth.Small,
-                FullWidth = true
-            };
+        }
+        else
+        {
+            var parameters = new DialogParameters();
+            var update = gowns.FirstOrDefault(_ => _.Id == Id);
+            parameters.Add("_gowns", update);
 
-        var dialog = await Dialog.Show<ReservationDialog>("Reserve", parameters, options).Result;
+            var options = new DialogOptions
+                {
+                    MaxWidth = MaxWidth.Small,
+                    FullWidth = true
+                };
+
+            var dialog = await Dialog.Show<ReservationDialog>("Reserve", parameters, options).Result;
+        }
+      
     }
 
     private async Task LoadGown()
