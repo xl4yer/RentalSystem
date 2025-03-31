@@ -4,24 +4,24 @@
 <style>
 
     @@media (max-width: 767px) {
-        .container .row {
-            --bs-gutter-x: 1.5rem;
-            --bs-gutter-y: 1rem;
-        }
+    .container .row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1rem;
+    }
 
-            .container .row > .col {
-                flex: 0 0 auto;
-                width: 50%;
-            }
+    .container .row > .col {
+    flex: 0 0 auto;
+    width: 50%;
+    }
     }
 
     .d-flex {
-        padding-top: 250px;
+    padding-top: 250px;
     }
 
-  /*   .card-img-top{
-        height: 270px;
-        object-fit: cover;
+    /*   .card-img-top{
+    height: 270px;
+    object-fit: cover;
     } */
 </style>
 
@@ -42,17 +42,17 @@
             @foreach (var gown in gowns.Take(currentIndex))
             {
                 <div class="col">
-                        <div class="card h-100">
-                            <img src="data:image/bmp;base64, @(Convert.ToBase64String(gown.Photo))" class="card-img-top" alt="@gown.Name">
-                            <div class="card-body">
-                                <h5 class="card-title">Name: @gown.Name</h5>
-                                <h6>Size: @gown.Size</h6>
-                                <p>Color: @gown.Color</p>
-                            <MudButton Variant="Variant.Filled" T="string" Color="Color.Info">Reserve Now</MudButton>
-                            </div>
-                     
+                    <div class="card h-100">
+                        <img src="data:image/bmp;base64, @(Convert.ToBase64String(gown.Photo))" class="card-img-top" alt="@gown.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">Name: @gown.Name</h5>
+                            <h6>Size: @gown.Size</h6>
+                            <p>Color: @gown.Color</p>
+                            <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Color="Color.Info">Reserve Now</MudButton>
                         </div>
-                   
+
+                    </div>
+
                 </div>
             }
         </div>
@@ -92,6 +92,20 @@
         {
             await LoadGown();
         }
+    }
+    private async Task ReserveNow(string Id)
+    {
+        var parameters = new DialogParameters();
+        var update = gowns.FirstOrDefault(_ => _.Id == Id);
+        parameters.Add("_gowns", update);
+
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+
+        var dialog = await Dialog.Show<ReservationDialog>("Reserve", parameters, options).Result;
     }
 
     private async Task LoadGown()

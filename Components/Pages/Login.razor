@@ -15,7 +15,7 @@
             <p1>Password</p1>
             <MudTextField @bind-Value="@user.Password" For="@(() => user.Password)" Margin="Margin.Dense" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="Click" AdornmentAriaLabel="Show Password" />
             <br />
-            <MudText Align="Align.Center">Don't' Have Account? <u><b> <MudLink  @onclick="Register">Register</MudLink></b></u> </MudText>
+            <MudText Align="Align.Center">Don't' Have Account? <u><b> <MudLink @onclick="Register">Register</MudLink></b></u> </MudText>
             <br />
             <MudButton FullWidth Disabled="@_processing" @onclick="UserLogin" Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
                 @if (_processing)
@@ -41,8 +41,7 @@
 
 
 @code {
-    [Parameter]
-    public Users user { get; set; } = new Users();
+    [Parameter] public Users user { get; set; } = new Users();
     private bool _processing = false;
     private string username = "";
     private string password = "";
@@ -67,10 +66,19 @@
             if (users?.Count > 0)
             {
                 var user = users[0];
+                await Loc.SetItemAsStringAsync("Id", user.Id);
                 await Loc.SetItemAsStringAsync("token", user.Token);
                 await Loc.SetItemAsStringAsync("role", user.Role);
                 await Loc.SetItemAsStringAsync("name", user.UserName);
-                Nav.NavigateTo("/gowns");
+                if (user.Role == "Administrator")
+                {
+                    Nav.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    Nav.NavigateTo("/reservation");
+                }
+
             }
             else loginError = true;
             _processing = false;
@@ -104,7 +112,7 @@
 
     }
 
-    private  Task Register()
+    private Task Register()
     {
         MudDialog.Close();
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };

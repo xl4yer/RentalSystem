@@ -46,6 +46,8 @@ namespace RentalSystem.Services
                             Color = rdr["Color"].ToString(),
                             Size = rdr["Size"].ToString(),
                             PaymentMethod = rdr["PaymentMethod"].ToString(),
+                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
+                            Receipt = rdr["Receipt"] as byte[],
                             Fee = Convert.ToDouble(rdr["Fee"]),
                         });
                     }
@@ -61,6 +63,39 @@ namespace RentalSystem.Services
                 }
             }
             return reservation;
+        }
+
+        public async Task<int> AddReservation(Reservation reservation)
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("AddReservation", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_Id", reservation.Id);
+                    com.Parameters.AddWithValue("_GownId", reservation.GownId);
+                    com.Parameters.AddWithValue("_UserId", reservation.UserId);
+                    com.Parameters.AddWithValue("_Date", reservation.Date);
+                    com.Parameters.AddWithValue("_PickupDate", reservation.PickupDate);
+                    com.Parameters.AddWithValue("_PaymentMethod", reservation.PaymentMethod);
+                    com.Parameters.AddWithValue("_ReservationFee", reservation.ReservationFee);
+                    com.Parameters.AddWithValue("_Receipt", reservation.Receipt);
+                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return 0;
         }
     }
 }

@@ -62,16 +62,12 @@
 </EditForm>
 
 @code {
-    [Parameter] 
-    public Gowns _gowns { get; set; } = new Gowns();
+    [Parameter] public Gowns _gowns { get; set; } = new Gowns();
     public Image _image { get; set; } = new Image();
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
     public string imgsrc { get; set; } = "";
-    [Parameter]
-    public byte[] _filebytes { get; set; } = null;
-    [Parameter]
-    public byte[] _photo { get; set; } = null;
+    [Parameter] public byte[] _filebytes { get; set; } = null;
+    [Parameter] public byte[] _photo { get; set; } = null;
     IList<IBrowserFile> files = new List<IBrowserFile>();
 
     public void OnValidSubmit(EditContext context)

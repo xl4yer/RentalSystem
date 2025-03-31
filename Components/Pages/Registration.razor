@@ -23,13 +23,11 @@
                         <p1>Last Name</p1>
                         <MudTextField @bind-Value="user.Lname" T="string" For="@(() => user.Lname)" Variant="Variant.Outlined" Margin="Margin.Dense" />
                         <p1>Extension</p1>
-                        <MudSelect @bind-Value="@user.Ext" For="@(() => user.Ext)" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            <MudSelectItem Value="@("Sr.")" />
-                            <MudSelectItem Value="@("Jr.")" />
-                            <MudSelectItem Value="@("II")" />
-                            <MudSelectItem Value="@("III")" />
-                            <MudSelectItem Value="@("IV")" />
-                            <MudSelectItem Value="@("V")" />
+                        <MudSelect @bind-Value="@user.Ext" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                            @foreach (var ext in new[] { "Sr.", "Jr.", "II", "III", "IV", "V"})
+                            {
+                                <MudSelectItem Value="@ext" />
+                            }
                         </MudSelect>
                         <p1>Address</p1>
                         <MudTextField @bind-Value="user.Address" For="@(() => user.Address)" Lines="2" T="string" Variant="Variant.Outlined" Margin="Margin.Dense" />
@@ -79,15 +77,13 @@
 </EditForm>
 
 @code {
-    [Parameter]
-    public Users user { get; set; } = new Users();
+    [Parameter] public Users user { get; set; } = new Users();
     private bool _processing = false;
     private bool _loader = false;
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     private string message { get; set; } = "";
-    //Blazor Captcha Validation
     private string validation = "";
     private string captcha = "";
     private string inputCaptcha = "";

@@ -1,4 +1,4 @@
-﻿@page "/gowns"
+﻿@page "/dashboard"
 @rendermode InteractiveServer
 <PageTitle>Rental Gowns</PageTitle>
 
@@ -122,7 +122,7 @@
 
         <br/>
 
-        <MudTabs Centered Color="Color.Dark">
+        <MudTabs Centered Color="Color.Inherit">
             <MudTabPanel Text="Reservations">
                 <MudTable Class="ma-3" Dense Hover Items="@reservation"
                           HorizontalScrollbar FixedHeader FixedFooter Height="600px">
@@ -280,7 +280,7 @@
                 FullWidth = true
             };
 
-        var dialog = await Dialog.Show<Update>("Update", parameters, options).Result;
+        var dialog = await Dialog.Show<UpdateGown>("Update", parameters, options).Result;
 
     }
 
