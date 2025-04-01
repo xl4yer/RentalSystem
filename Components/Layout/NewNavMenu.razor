@@ -1,14 +1,18 @@
 ﻿@rendermode InteractiveServer
 
 <MudLayout Style="background-color: #ffffff;">
-    <MudAppBar Elevation="1" Style="background-color:#4E3434; border-bottom-left-radius:30px; border-bottom-right-radius:30px">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudLink Href="/" Class="logo-link">
+            <img src="logo.png" style="height:70px; width:70px" alt="Logo" class="app-logo" />
+        </MudLink>
         <MudSpacer />
         <LoginButton />
     </MudAppBar>
+
     <MudMainContent Class="pt-6 px-3">
     </MudMainContent>
 </MudLayout>
+
 
 @code {
     private bool _open = false;

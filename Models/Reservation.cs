@@ -14,7 +14,7 @@
         public string Color { get; set; } = "";
         public string Size { get; set; } = "";
         public string PaymentMethod { get; set; } = "";
-        public double ReservationFee { get; set; }
+        public double ReservationFee { get; set; } = 500;
         public byte[]? Receipt { get; set; }
         public double Fee { get; set; }
     }

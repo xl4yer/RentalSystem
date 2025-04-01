@@ -1,28 +1,70 @@
 ﻿<style>
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
     .custom-dialog-title {
-    background-color: #4E3434;
-    color: white;
+        background-color: #4E3434;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        padding: 12px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
 
     .gown-image {
-    width: 200px;
-    height: 250px;
-    border-radius: 10px;
-    margin: 10px;
+        width: 200px;
+        height: 250px;
+        border-radius: 10px;
+        margin: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s;
     }
 
+        .gown-image:hover {
+            transform: scale(1.05);
+        }
+
     .payment-container p {
-    font-weight: bold;
-    margin-bottom: 5px;
+        font-weight: bold;
+        margin-bottom: 5px;
     }
 
     .payment-receipt img {
-    width: 200px;
-    height: 200px;
-    border: 1px solid gray;
-    margin-top: 10px;
-    border-radius: 5px;
+        width: 200px;
+        height: 200px;
+        border: 1px solid gray;
+        margin-top: 10px;
+        border-radius: 5px;
+        transition: transform 0.3s;
     }
+
+        .payment-receipt img:hover {
+            transform: scale(1.05);
+        }
+
+    .mud-dialog {
+        animation: fadeIn 0.3s ease-in-out;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .mud-button {
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+        .mud-button:hover {
+            transform: translateY(-2px);
+        }
 </style>
 
 <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
@@ -31,54 +73,74 @@
     </TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px; padding: 20px;">
-            <div class="container mt-4">
-                <div class="row">
-                    <div class="col-sm-6 text-center">
-                        <MudImage Src="@($"data:image/bmp;base64,{Convert.ToBase64String(_gowns.Photo)}")"
-                        Class="gown-image"
-                        Elevation="25" />
-                    </div>
-                    <div class="col-sm-6">
-                        <MudText Align="Align.Left"><b>Gown Name:</b> @_gowns.Name</MudText>
-                        <MudText Align="Align.Left"><b>Gown Type:</b> @_gowns.Type</MudText>
-                        <MudText Align="Align.Left"><b>Gown Color:</b> @_gowns.Color</MudText>
-                        <MudText Align="Align.Left"><b>Gown Size:</b> @_gowns.Size</MudText>
 
-                    </div>                    
-                </div>
-            </div>
-            <p>Pickup Date</p>
-            <MudDatePicker  Label="Pick Up Date" @bind-Date="_date" Variant="Variant.Outlined" Margin="Margin.Normal" />
-            <p>Payment Method</p>
-            <MudSelect @bind-Value="@_reservation.PaymentMethod" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                @foreach (var payment in new[] { "Cash","Gcash","Paymaya" })
-                {
-                    <MudSelectItem Value="@payment" />
-                }
-            </MudSelect>
-            @if (_reservation.PaymentMethod == "Cash")
-            {
+            <MudStepper ShowResetButton>
+                <MudStep Title="Gown Details">
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="12" md="6" class="text-center">
+                            <MudImage Src="@($"data:image/bmp;base64,{Convert.ToBase64String(_gowns.Photo)}")" Class="gown-image" Elevation="25" />
+                        </MudItem>
+                        <MudItem xs="12" md="6" class="text-center">
+                            <br /><br /><br>
+                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Name:</b> @_gowns.Name</MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Type:</b> @_gowns.Type</MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Color:</b> @_gowns.Color</MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Size:</b> @_gowns.Size</MudText>
+                        </MudItem>
+                    </MudGrid>
 
-            }
-            else
-            {
-                <p>Payment Receipt</p>
-                <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
-                    <ActivatorContent>
-                        <div class="payment-receipt">
-                            <img src="@imgsrc" />
-                        </div>
-                    </ActivatorContent>
-                </MudFileUpload>
-            }
+                </MudStep>
+                <MudStep Title="Select Pickup Date" Skippable="false">
+                    <MudDatePicker @bind-Date="_date" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </MudStep>
+                <MudStep Title="Payment">
+                    <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudItem xs="6" class="text-right">
+                            <MudText Align="Align.Center">Payment Method</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSelect @bind-Value="@paymentMethod" Placeholder="Gcash" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                @foreach (var payment in new[] { "Cash", "Gcash", "Paymaya" })
+                                {
+                                    <MudSelectItem Value="@payment" />
+                                }
+                            </MudSelect>
+                        </MudItem>
 
+                        <MudItem xs="6" class="text-right">
+                            <MudText Align="Align.Center">Reservation Fee</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="@_reservation.ReservationFee" Margin="Margin.Dense" Variant="Variant.Outlined"></MudTextField>
+                        </MudItem>
+
+                        @if (paymentMethod != "Cash")
+                        {
+                            <MudItem xs="6" class="text-right">
+                                <MudText Align="Align.Center">Upload Receipt</MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
+                                    <ActivatorContent>
+                                        <div class="payment-receipt">
+                                            <img src="@imgsrc" />
+                                        </div>
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </MudItem>
+                        }
+                    </MudGrid>
+
+                </MudStep>
+            </MudStepper>
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Default">Cancel</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Info" @onclick="Submit">Reserve</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Default" @onclick="Close">Close</MudButton>
+        <MudButton Variant="Variant.Filled" Style="background-color:#4E3434; color:white" @onclick="Submit">Reserve</MudButton>
     </DialogActions>
 </MudDialog>
+
 
 
 @code {
@@ -91,6 +153,8 @@
     [Parameter] public byte[] _photo { get; set; } = null!;
     IList<IBrowserFile> files = new List<IBrowserFile>();
     private DateTime? _date = DateTime.Today;
+    private string paymentMethod { get; set; } = "Gcash";
+    [CascadingParameter] IMudDialogInstance? mudDialog { get; set; }
 
     public async Task Id()
     {
@@ -106,6 +170,11 @@
         }
     }
 
+    private async Task Close()
+    {
+        mudDialog.Close();
+    }
+
     private async Task Submit()
     {
         try
@@ -117,7 +186,7 @@
                     UserId = id,
                     Date = DateTime.Now,
                     PickupDate = _date,
-                    PaymentMethod = _reservation.PaymentMethod,
+                    PaymentMethod = paymentMethod,
                     ReservationFee = 500,
                     Receipt = _photo
                 };

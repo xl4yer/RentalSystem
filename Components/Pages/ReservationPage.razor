@@ -1,4 +1,4 @@
-﻿@page "/availablegowns"
+﻿@page "/gowns"
 @rendermode InteractiveServer
 
 <style>
@@ -48,7 +48,8 @@
                             <h5 class="card-title">Name: @gown.Name</h5>
                             <h6>Size: @gown.Size</h6>
                             <p>Color: @gown.Color</p>
-                            <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Style="background-color:#4E3434; color:white">Reserve Now</MudButton>
+                            <center>  <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Style="background-color:#4E3434; color:white">Reserve Now</MudButton></center>
+                          
                         </div>
 
                     </div>
@@ -81,8 +82,8 @@
 
 @code {
     private Gowns[] gowns;
-    private int currentIndex = 12;
-    private const int PageSize = 12;
+    private int currentIndex = 24;
+    private const int PageSize = 24;
     private bool _loading = false;
     private string txtsearch { get; set; } = string.Empty;
     private string token;
@@ -114,7 +115,8 @@
             var options = new DialogOptions
                 {
                     MaxWidth = MaxWidth.Small,
-                    FullWidth = true
+                    FullWidth = true,
+                    CloseButton = true,
                 };
 
             var dialog = await Dialog.Show<ReservationDialog>("Reserve", parameters, options).Result;
