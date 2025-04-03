@@ -1,13 +1,14 @@
-﻿@page "/reservations"
+﻿@page "/rentals"
 @rendermode InteractiveServer
 
-<MudTable Class="ma-3" Dense Hover Items="@reservation"
+<MudTable Class="ma-3" Dense Hover Items="@rentals"
           HorizontalScrollbar FixedHeader FixedFooter Height="600px">
     <ToolBarContent>
-        <MudTextField T="string" Placeholder="Search Reservations..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+        <MudTextField T="string" Placeholder="Search Rentals..." Variant="Variant.Outlined" Margin="Margin.Dense" />
     </ToolBarContent>
+
     <HeaderContent>
-        @foreach (var header in new[] { "Date", "Customer Name", "Gown Name", "Status", "Action" })
+        @foreach (var header in new[] { "Date", "Customer Name","Gown Name","Status", "Action" })
         {
             <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
         }
@@ -16,7 +17,7 @@
         <MudTd>@context.Date?.ToString("d")</MudTd>
         <MudTd>@context.Fullname</MudTd>
         <MudTd>@context.Name</MudTd>
-        <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
+        <MudTd> <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : context.Status == "Returned" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
         <MudTd>
             <MudFab Style="background-color:#4E3434; color:white" StartIcon="@Icons.Material.Filled.More" @onclick="() => Actions(context.Id)" Size="Size.Small" />
         </MudTd>
@@ -24,22 +25,22 @@
 </MudTable>
 
 @code {
-    private Reservation[]? reservation;
+    private Rentals[]? rentals;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await LoadReservations();
+            await LoadRentals();
     }
-    private async Task LoadReservations()
+    private async Task LoadRentals()
     {
         try
         {
             using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
-            var response = await client.GetAsync("api/Reservation/Reservations");
+            var response = await client.GetAsync("api/Rental/Rentals");
             if (!response.IsSuccessStatusCode) return;
 
             await Task.Delay(1000);
-            reservation = JsonConvert.DeserializeObject<Reservation[]>(await response.Content.ReadAsStringAsync());
+            rentals = JsonConvert.DeserializeObject<Rentals[]>(await response.Content.ReadAsStringAsync());
             StateHasChanged();
         }
         catch (Exception ex)
@@ -51,8 +52,8 @@
     private async Task Actions(string id)
     {
         var parameters = new DialogParameters();
-        var update = reservation.FirstOrDefault(_ => _.Id == id);
-        parameters.Add("_reservation", update);
+        var update = rentals.FirstOrDefault(_ => _.Id == id);
+        parameters.Add("_rentals", update);
 
         var options = new DialogOptions
             {

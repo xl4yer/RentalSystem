@@ -15,7 +15,7 @@
 </head>
 <body>
 	<NewNavMenu/>
-	
+
 	<main>
 		<div>
 			<span>Discover</span>
@@ -27,7 +27,7 @@
 				We offer elegant rental gowns for weddings, debuts, and special events—luxury without the high cost. <br />
 				Browse our collection, rent with ease, and shine effortlessly! ✨
 			</p>
-			<a href="/gowns" style="background-color:#4E3434; color:white">Rent Now</a>
+			<a href="" @onclick="Submit" style="background-color:#4E3434; color:white">Rent Now</a>
 		</div>
 		<!-- INFORMATION SECTION ENDS -->
 		<!-- ANIMATED SLIDER SECTION STARTS -->
@@ -74,6 +74,11 @@
 		<img src="https://cdn.pixabay.com/photo/2012/04/13/13/57/scallop-32506_960_720.png" alt="" class="bg2">
 	</main>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js'></script>
+	<center>
+		<MudText Align="Align.Center" Typo="Typo.h5" Style="color:#4E3434">Available Gowns</MudText>
+	</center>
+
+	<AvailableGowns2 />
 
 	<script>
 		var swiper = new Swiper(".swiper", {
@@ -112,9 +117,9 @@
 </html>
 
 <div class="d-flex">
-	
-	
 </div>
+
+
 
 <MudDialog @bind-Visible="_visible" Options="_dialogOptions">
 	<TitleContent>
@@ -132,9 +137,40 @@
 	private bool _visible;
 	private bool _hide = true;
 	private int _rating;
-    private readonly DialogOptions _dialogOptions = new() { FullWidth = true };
+	private readonly DialogOptions _dialogOptions = new() { FullWidth = true };
+	private void OpenDialog() => _visible = true;
+	private void Submit() => _visible = false;
+	private string token;
+	private string role;
 
-    private void OpenDialog() => _visible = true;
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			token = await Loc.GetItemAsStringAsync("token");
+			role = await Loc.GetItemAsStringAsync("role");
+			StateHasChanged();
 
-    private void Submit() => _visible = false;
+			if (token != null)
+			{
+				if (role == "User")
+				{
+					Nav.NavigateTo("/userdashboard");
+				}
+				else if (role == "Administrator")
+				{
+					Nav.NavigateTo("/dashboard");
+				}
+				else
+				{
+					Nav.NavigateTo("/");
+				}
+			}
+			else
+			{
+				Nav.NavigateTo("/");
+			}
+		}
+	}
+
 }

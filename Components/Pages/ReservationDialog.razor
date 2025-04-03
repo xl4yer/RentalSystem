@@ -82,10 +82,10 @@
                         </MudItem>
                         <MudItem xs="12" md="6" class="text-center">
                             <br /><br /><br>
-                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Name:</b> @_gowns.Name</MudText>
-                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Type:</b> @_gowns.Type</MudText>
-                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Color:</b> @_gowns.Color</MudText>
-                            <MudText Typo="Typo.h5" Align="Align.Center"><b>Gown Size:</b> @_gowns.Size</MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Justify">Gown Name: <b>@_gowns.Name</b></MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Justify">Gown Type: <b>@_gowns.Type</b></MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Justify">Gown Color: <b>@_gowns.Color</b></MudText>
+                            <MudText Typo="Typo.h5" Align="Align.Justify">Gown Size: <b>@_gowns.Size</b></MudText>
                         </MudItem>
                     </MudGrid>
 
@@ -188,7 +188,8 @@
                     PickupDate = _date,
                     PaymentMethod = paymentMethod,
                     ReservationFee = 500,
-                    Receipt = _photo
+                    Receipt = _photo,
+                    Status = "Pending"
                 };
             using var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
             var response = await httpClient.PostAsJsonAsync("api/Reservation/AddReservation", reservation);

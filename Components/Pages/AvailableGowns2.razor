@@ -1,0 +1,154 @@
+﻿@page "/gowns"
+@rendermode InteractiveServer
+
+<style>
+
+    @@media (max-width: 767px) {
+    .container .row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1rem;
+    }
+
+    .container .row > .col {
+    flex: 0 0 auto;
+    width: 50%;
+    }
+    }
+
+    .d-flex {
+    padding-top: 250px;
+    }
+
+    /*   .card-img-top{
+    height: 270px;
+    object-fit: cover;
+    } */
+</style>
+
+<NewNavMenu />
+
+<div class="container">
+    @if (gowns == null || gowns.Length == 0)
+    {
+        <div class="d-flex justify-content-center my-4">
+            <div class="loader"></div>
+        </div>
+    }
+    else
+    {
+
+        <br />
+        <div class="row row-cols-1 row-cols-md-6 g-4">
+            @foreach (var gown in gowns.Take(currentIndex))
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="data:image/bmp;base64, @(Convert.ToBase64String(gown.Photo))" class="card-img-top" alt="@gown.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">Name: @gown.Name</h5>
+                            <h6>Size: @gown.Size</h6>
+                            <p>Color: @gown.Color</p>
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+        </div>
+        <br />
+        <br />
+
+        @if (currentIndex < gowns.Length)
+        {
+            <center>
+                <div>
+                    <MudButton Disabled="@_loading" OnClick="loadMore" Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
+                        @if (_loading)
+                        {
+                            <div class="loader"></div>
+                        }
+                        else
+                        {
+                            <MudText>Load More</MudText>
+                        }
+                    </MudButton>
+                </div>
+            </center>
+        }
+    }
+</div>
+
+@code {
+    private Gowns[] gowns;
+    private int currentIndex = 24;
+    private const int PageSize = 24;
+    private bool _loading = false;
+    private string txtsearch { get; set; } = string.Empty;
+    private string token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadGown();
+            token = await Loc.GetItemAsStringAsync("token");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ReserveNow(string Id)
+    {
+        @if (token == null)
+        {
+            var parameters = new DialogParameters();
+            var dialog = await Dialog.Show<Login>("Add New Client").Result;
+
+        }
+        else
+        {
+            var parameters = new DialogParameters();
+            var update = gowns.FirstOrDefault(_ => _.Id == Id);
+            parameters.Add("_gowns", update);
+
+            var options = new DialogOptions
+                {
+                    MaxWidth = MaxWidth.Small,
+                    FullWidth = true,
+                    CloseButton = true,
+                };
+
+            var dialog = await Dialog.Show<ReservationDialog>("Reserve", parameters, options).Result;
+        }
+      
+    }
+
+    private async Task LoadGown()
+    {
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync("api/Gown/AvailableGowns");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+
+    private async void loadMore()
+    {
+        _loading = true;
+        await Task.Delay(1000);
+        currentIndex = Math.Min(currentIndex + PageSize, gowns.Length);
+        StateHasChanged();
+    }
+   
+ }

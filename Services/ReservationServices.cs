@@ -49,6 +49,7 @@ namespace RentalSystem.Services
                             ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
                             Receipt = rdr["Receipt"] as byte[],
                             Fee = Convert.ToDouble(rdr["Fee"]),
+                            Status = rdr["Status"].ToString(),
                         });
                     }
                     await rdr.CloseAsync().ConfigureAwait(false);
@@ -84,6 +85,34 @@ namespace RentalSystem.Services
                     com.Parameters.AddWithValue("_PaymentMethod", reservation.PaymentMethod);
                     com.Parameters.AddWithValue("_ReservationFee", reservation.ReservationFee);
                     com.Parameters.AddWithValue("_Receipt", reservation.Receipt);
+                    com.Parameters.AddWithValue("_Status", reservation.Status);
+                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return 0;
+        }
+
+        public async Task<int> ApproveReservation(Reservation reservation)
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("ApproveReservation", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_ReservationId", reservation.Id);
+                    com.Parameters.AddWithValue("_Status", reservation.Status);
                     return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)

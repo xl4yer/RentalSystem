@@ -28,5 +28,12 @@ namespace RentalSystem.Controllers
             var ret = await srvcs.AddReservation(reservation);
             return ret;
         }
+
+        [HttpPut]
+        public async Task<int> ApproveReservation([FromBody] Reservation reservation)
+        {
+            var ret = await srvcs.ApproveReservation(reservation);
+            return ret;
+        }
     }
 }

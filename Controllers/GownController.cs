@@ -23,6 +23,13 @@ namespace RentalSystem.Controllers
             return ret;
         }
 
+        [HttpGet]
+        public async Task<List<Gowns>> AvailableGowns()
+        {
+            var ret = await srvcs.AvailableGowns();
+            return ret;
+        }
+
         [HttpPost]
         public async Task<int> AddGown([FromBody] Gowns gown)
         {

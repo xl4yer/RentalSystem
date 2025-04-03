@@ -14,6 +14,7 @@
     {
         <MudGrid Class="mt-3" Justify="Justify.Center">
             <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="21" Style="border-radius:25px;">
                 <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
                     <DataAnnotationsValidator />
                     <MudContainer Style="max-height: 600px;">
@@ -54,18 +55,20 @@
                         <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Submit</MudButton>
                     </MudToolBar>
                 </EditForm>
+                </MudCard>
             </MudItem>
             <MudItem xs="12" sm="6" md="8">
+                <MudCard Elevation="23" Style="border-radius:25px;">
                 <MudToolBar Class="top-row px-3">
                     <MudSpacer />
-                    <MudTextField T="string" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                    <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
                 </MudToolBar>
                 <div style="overflow-x: auto;">
                     <MudTable Class="ma-3" Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px">
                         <HeaderContent>
-                            @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Status", "Action" })
+                            @foreach (var header in new[] {"Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Status", "Action" })
                             {
-                                <MudTh>@header</MudTh>
+                                    <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
                             }
                         </HeaderContent>
                         <RowTemplate>
@@ -86,58 +89,33 @@
                         </RowTemplate>
                     </MudTable>
                 </div>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+        <br /> <br />
+        <MudGrid>
+
+            <MudItem xs="6">
+                <MudCard Elevation="23" Style="border-radius:25px;">
+                    <MudText Typo="Typo.h5" Align="Align.Center">Reservations</MudText>
+                    <ReservationPage />
+                 </MudCard>
+            </MudItem>
+            <MudItem xs="6">
+                <MudCard Elevation="23" Style="border-radius:25px;">
+                    <MudText Typo="Typo.h5" Align="Align.Center">Rentals</MudText>
+                    <RentalPage />
+                    </MudCard>
             </MudItem>
         </MudGrid>
 
-        <MudTabs Centered Color="Color.Inherit">
-            <MudTabPanel Text="Reservations">
-                <MudTable Class="ma-3" Dense Hover Items="@reservation"
-                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-                    <HeaderContent>
-                        @foreach (var header in new[] { "Customer Name", "Photo", "Gown Name", "Color", "Size" })
-                        {
-                            <MudTh>@header</MudTh>
-                        }
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>@context.Fullname</MudTd>
-                        <MudTd>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-                        </MudTd>
-                        <MudTd>@context.Name</MudTd>
-                        <MudTd>@context.Color</MudTd>
-                        <MudTd>@context.Size</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudTabPanel>
-            <MudTabPanel Text="Rental">
-                <MudTable Class="ma-3" Dense Hover Items="@reservation"
-                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-                    <HeaderContent>
-                        @foreach (var header in new[] { "Customer Name", "Photo", "Gown Name", "Color", "Size" })
-                        {
-                            <MudTh>@header</MudTh>
-                        }
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>@context.Fullname</MudTd>
-                        <MudTd>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-                        </MudTd>
-                        <MudTd>@context.Name</MudTd>
-                        <MudTd>@context.Color</MudTd>
-                        <MudTd>@context.Size</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudTabPanel>
-        </MudTabs>
+     
     }
 </div>
 
 
 @code {
     private Gowns[]? gown;
-    private Reservation[]? reservation;
     [Parameter] public Gowns _gowns { get; set; } = new();
     [Parameter] public Image _image { get; set; } = new();
     bool fixed_header = true, fixed_footer = false;
@@ -227,8 +205,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await LoadGown();
-            await LoadReservation();
+            await LoadGowns();
     }
 
     private async Task Update(string id)
@@ -247,7 +224,7 @@
 
     }
 
-    private async Task LoadGown()
+    private async Task LoadGowns()
     {
         try
         {
@@ -265,23 +242,6 @@
         }
     }
 
-    private async Task LoadReservation()
-    {
-        try
-        {
-            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
-            var response = await client.GetAsync("api/Reservation/Reservations");
-            if (!response.IsSuccessStatusCode) return;
-
-            await Task.Delay(1000);
-            reservation = JsonConvert.DeserializeObject<Reservation[]>(await response.Content.ReadAsStringAsync());
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        }
-    }
 
     public void OnValidSubmit(EditContext context)
     {
