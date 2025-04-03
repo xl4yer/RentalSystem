@@ -63,5 +63,38 @@ namespace RentalSystem.Services
             }
             return rentals;
         }
+        
+        public async Task<int> AddRental(Rentals rentals)
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("AddGown", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_Id", rentals.Id);
+                    com.Parameters.AddWithValue("_GownId", rentals.GownId);
+                    com.Parameters.AddWithValue("_UserId", rentals.UserId);
+                    com.Parameters.AddWithValue("_Date", rentals.Date);
+                    com.Parameters.AddWithValue("_DueDate", rentals.DueDate);
+                    com.Parameters.AddWithValue("_RentalFee", rentals.RentalFee);
+                    com.Parameters.AddWithValue("_Status", rentals.Status);
+                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return 0;
+        }
     }
 }
+

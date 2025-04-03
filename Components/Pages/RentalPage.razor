@@ -1,6 +1,7 @@
 ﻿@page "/rentals"
 @rendermode InteractiveServer
-
+ <MudText Typo="Typo.h5" Align="Align.Center">Rentals</MudText>
+<MudButton Variant="Variant.Filled" @onclick="AddRental">New Rental</MudButton>
 <MudTable Class="ma-3" Dense Hover Items="@rentals"
           HorizontalScrollbar FixedHeader FixedFooter Height="600px">
     <ToolBarContent>
@@ -51,16 +52,17 @@
 
     private async Task Actions(string id)
     {
-        var parameters = new DialogParameters();
-        var update = rentals.FirstOrDefault(_ => _.Id == id);
-        parameters.Add("_rentals", update);
+       
+    }
 
+    public async Task AddRental()
+    {
+        var parameters = new DialogParameters();
         var options = new DialogOptions
             {
                 MaxWidth = MaxWidth.Small,
                 FullWidth = true
             };
-
-        var dialog = await Dialog.Show<ReservationActions>("", parameters, options).Result;
+        var dialog = await Dialog.Show<SearchReservations>("", parameters, options).Result;
     }
 }

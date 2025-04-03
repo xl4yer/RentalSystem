@@ -1,0 +1,31 @@
+﻿<style>
+    .custom-dialog-title {
+        background-color: #4E3434;
+        color: white;
+    }
+</style>
+
+<EditForm Model="@_reservation" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
+        <TitleContent><MudText Typo="Typo.h6" Style="color:white">Update</MudText></TitleContent>
+        <DialogContent>
+            <MudContainer Style="max-height: 650px;">
+                <h1>Add New Rental</h1>
+            </MudContainer>
+            <MudToolBar>
+                <MudSpacer />
+                <MudButton FullWidth>Cancel</MudButton>
+                <MudButton FullWidth Variant="Variant.Filled" Style="background-color:#4E3434; color:white">Update</MudButton>
+            </MudToolBar>
+        </DialogContent>
+    </MudDialog>
+</EditForm>
+
+@code{
+    [Parameter] public Reservation _reservation { get; set; } = new Reservation();
+    public void OnValidSubmit(EditContext context)
+    {
+
+    }
+}

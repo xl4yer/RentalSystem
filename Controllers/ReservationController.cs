@@ -35,5 +35,13 @@ namespace RentalSystem.Controllers
             var ret = await srvcs.ApproveReservation(reservation);
             return ret;
         }
+
+
+        [HttpGet]
+        public async Task<List<Reservation>> SearchReservation(string search)
+        {
+            var ret = await srvcs.SearchReservation(search);
+            return ret;
+        }
     }
 }
