@@ -25,10 +25,20 @@ HorizontalScrollbar FixedHeader FixedFooter Height="600px">
         <MudTd>@context.Size</MudTd>
         <MudTd>@context.Color</MudTd>
         <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
-        <MudTd>
-            <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">More</MudButton>
-            <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
-        </MudTd>
+        @if (context.Status != "Approved")
+        {
+            <MudTd>
+                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">More</MudButton>
+            </MudTd>
+        }
+        else
+        {
+            <MudTd>
+                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">More</MudButton>
+                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
+            </MudTd>
+        })
+       
     </RowTemplate>
 </MudTable>
 

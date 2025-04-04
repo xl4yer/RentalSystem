@@ -27,10 +27,8 @@
 				We offer elegant rental gowns for weddings, debuts, and special events—luxury without the high cost. <br />
 				Browse our collection, rent with ease, and shine effortlessly! ✨
 			</p>
-			<a href="" @onclick="Submit" style="background-color:#4E3434; color:white">Rent Now</a>
+			<a href="" @onclick="RentNow" style="background-color:#4E3434; color:white">Rent Now</a>
 		</div>
-		<!-- INFORMATION SECTION ENDS -->
-		<!-- ANIMATED SLIDER SECTION STARTS -->
 		<div class="swiper">
 			<div class="swiper-wrapper">
 				<div class="swiper-slide swiper-slide--one">
@@ -119,8 +117,6 @@
 <div class="d-flex">
 </div>
 
-
-
 <MudDialog @bind-Visible="_visible" Options="_dialogOptions">
 	<TitleContent>
 		<MudText Typo="Typo.h6">
@@ -142,6 +138,12 @@
 	private void Submit() => _visible = false;
 	private string token;
 	private string role;
+
+	private Task RentNow()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		return Dialog.ShowAsync<Login>("Login", options);
+	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
