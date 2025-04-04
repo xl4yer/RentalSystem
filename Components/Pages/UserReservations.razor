@@ -1,0 +1,72 @@
+﻿@page "/userreservations"
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject ILocalStorageService Loc
+
+<style>
+    .custom-dialog-title {
+        background-color: #4E3434;
+        color: white;
+    }
+</style>
+
+
+<MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
+    <TitleContent>
+        <MudText Typo="Typo.h6" Style="color:white">My Reservations</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Style="max-height: 650px;">
+
+            <MudTable Class="ma-3" Dense Hover Items="@reservations" FixedHeader FixedFooter Height="600px">
+                <HeaderContent>
+                    @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Status"})
+                    {
+                        <MudTh>@header</MudTh>
+                    }
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                    </MudTd>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>@context.Type</MudTd>
+                    <MudTd>@context.Color</MudTd>
+                    <MudTd>@context.Size</MudTd>
+                    <MudTd>@context.Status</MudTd>
+
+                </RowTemplate>
+            </MudTable>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    private Reservation? _reservation;
+    private Reservation[]? reservations;
+    private string UserId { get; set; } = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) UserId = await Loc.GetItemAsStringAsync("Id");
+        await LoadUserReservations();
+        StateHasChanged();
+    }
+
+    private async Task LoadUserReservations()
+    {
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Reservation/UserReservations?userId={UserId}");
+            if (!response.IsSuccessStatusCode) return;
+            reservations = JsonConvert.DeserializeObject<Reservation[]>(await response.Content.ReadAsStringAsync());
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+   
+}

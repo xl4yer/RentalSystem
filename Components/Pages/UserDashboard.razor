@@ -1,4 +1,40 @@
 ﻿@page "/userdashboard"
 @rendermode InteractiveServer
 
-<h1>User Dashboard</h1>
+
+
+<NewNavMenu />
+<br />
+<MudGrid Justify="Justify.Center" Class="mt-5">
+    <MudItem xs="6">
+        <MudPaper Elevation="23" Class="pa-6" Style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+            <MudText Typo="Typo.h5" Align="Align.Center" Style="font-size:20px; font-weight: bold;">Your Reservations</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Margin="Margin.Normal" @onclick="MyReservations">My Reservations</MudButton>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6">
+        <MudPaper Elevation="23" Class="pa-6" Style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+            <MudText Typo="Typo.h5" Align="Align.Center" Style="font-size:20px; font-weight: bold;">Your Rentals</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Margin="Margin.Normal">My Rentals</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<br>
+
+<MudText Typo="Typo.h5" Align="Align.Center">Available Gowns</MudText>
+<AvailableGowns/>
+
+@code{
+    private Task MyReservations()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium, 
+                FullWidth = true          
+            };
+
+        return Dialog.ShowAsync<UserReservations>("User Reservations", options);
+    }
+}

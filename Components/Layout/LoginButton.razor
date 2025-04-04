@@ -2,11 +2,21 @@
 
 @if (token != null)
 {
-    <MudButton Style="color:white" @onclick="Logout" Variant="Variant.Text">Log out</MudButton>
+    <MudButton Style="color:white" @onclick="ForceLogout" Variant="Variant.Text">Log out</MudButton>
 }
 else
 {
     <MudButton Style="color:white" @onclick="Login" Variant="Variant.Text">Login</MudButton>
+}
+
+@code {
+    private async Task ForceLogout()
+    {
+        Logout();
+        await JS.InvokeVoidAsync("forceReload1");
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
 }
 
 

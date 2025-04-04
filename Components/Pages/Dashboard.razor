@@ -20,7 +20,7 @@
                     <MudContainer Style="max-height: 600px;">
                         <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
                             <ActivatorContent>
-                                <img src="@imgsrc" width="100%" style="max-width: 250px; border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
+                                <img src="@imgsrc"  style="max-width: 250px; border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
                             </ActivatorContent>
                         </MudFileUpload> <br />
                         <MudText Align="Align.Justify">Gown Name</MudText>
@@ -60,6 +60,7 @@
             <MudItem xs="12" sm="6" md="8">
                 <MudCard Elevation="23" Style="border-radius:25px;">
                 <MudToolBar Class="top-row px-3">
+                    <MudSpacer/>
                     <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
                 </MudToolBar>
                 <div style="overflow-x: auto;">
@@ -91,21 +92,14 @@
                 </MudCard>
             </MudItem>
         </MudGrid>
-        <br /> <br />
-        <MudGrid>
-            <MudItem xs="6">
-                <MudCard Elevation="23" Style="border-radius:25px;">
-                    <ReservationPage />
-                 </MudCard>
-            </MudItem>
-            <MudItem xs="6">
-                <MudCard Elevation="23" Style="border-radius:25px;">
-                    <RentalPage />
-                    </MudCard>
-            </MudItem>
-        </MudGrid>
-
-     
+        <br /> 
+        <MudCard Elevation="23" Style="border-radius:25px;">
+            <ReservationPage />
+        </MudCard>
+        <br />
+        <MudCard Elevation="23" Style="border-radius:25px;">
+            <RentalPage />
+        </MudCard>
     }
 </div>
 

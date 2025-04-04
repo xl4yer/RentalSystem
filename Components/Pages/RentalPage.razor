@@ -1,10 +1,11 @@
 ﻿@page "/rentals"
 @rendermode InteractiveServer
+<br />
  <MudText Typo="Typo.h5" Align="Align.Center">Rentals</MudText>
-<MudButton Variant="Variant.Filled" @onclick="AddRental">New Rental</MudButton>
 <MudTable Class="ma-3" Dense Hover Items="@rentals"
           HorizontalScrollbar FixedHeader FixedFooter Height="600px">
     <ToolBarContent>
+        <MudSpacer />
         <MudTextField T="string" Placeholder="Search Rentals..." Variant="Variant.Outlined" Margin="Margin.Dense" />
     </ToolBarContent>
 
@@ -63,6 +64,6 @@
                 MaxWidth = MaxWidth.Small,
                 FullWidth = true
             };
-        var dialog = await Dialog.Show<SearchReservations>("", parameters, options).Result;
+        var dialog = await Dialog.Show<AddToRentals>("", parameters, options).Result;
     }
 }

@@ -38,6 +38,8 @@ namespace RentalSystem.Services
                         {
                             Id = rdr["Id"].ToString(),
                             Fullname = rdr["Fullname"].ToString(),
+                            GownId = rdr["GownId"].ToString(),
+                            UserId = rdr["UserId"].ToString(),
                             Date = Convert.ToDateTime(rdr["Date"]),
                             PickupDate = Convert.ToDateTime(rdr["PickupDate"]),
                             Type = rdr["Type"].ToString(),
@@ -98,6 +100,56 @@ namespace RentalSystem.Services
                 }
             }
             return 0;
+        }
+
+        public async Task<List<Reservation>> UserReservations(string UserId)
+        {
+            List<Reservation> reservation = new List<Reservation>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("UserReservations", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_UserId", UserId);
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        reservation.Add(new Reservation
+                        {
+                            Id = rdr["Id"].ToString(),
+                            Fullname = rdr["Fullname"].ToString(),
+                            GownId = rdr["GownId"].ToString(),
+                            UserId = rdr["UserId"].ToString(),
+                            Date = Convert.ToDateTime(rdr["Date"]),
+                            PickupDate = Convert.ToDateTime(rdr["PickupDate"]),
+                            Type = rdr["Type"].ToString(),
+                            Photo = rdr["Photo"] as byte[],
+                            Name = rdr["Name"].ToString(),
+                            Color = rdr["Color"].ToString(),
+                            Size = rdr["Size"].ToString(),
+                            PaymentMethod = rdr["PaymentMethod"].ToString(),
+                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
+                            Receipt = rdr["Receipt"] as byte[],
+                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            Status = rdr["Status"].ToString(),
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return reservation;
         }
 
         public async Task<int> ApproveReservation(Reservation reservation)

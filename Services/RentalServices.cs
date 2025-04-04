@@ -71,7 +71,7 @@ namespace RentalSystem.Services
                 try
                 {
                     await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("AddGown", con)
+                    var com = new MySqlCommand("AddRental", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };

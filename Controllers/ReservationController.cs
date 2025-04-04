@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentalSystem.Models;
 using RentalSystem.Services;
 
@@ -41,6 +42,13 @@ namespace RentalSystem.Controllers
         public async Task<List<Reservation>> SearchReservation(string search)
         {
             var ret = await srvcs.SearchReservation(search);
+            return ret;
+        }
+
+        [HttpGet]
+        public async Task<List<Reservation>> UserReservations(string UserId)
+        {
+            var ret = await srvcs.UserReservations(UserId);
             return ret;
         }
     }

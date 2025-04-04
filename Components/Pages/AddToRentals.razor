@@ -44,44 +44,44 @@
                 <MudText Typo="Typo.subtitle1">Gown Name: @_reservation.Name</MudText>
                 <MudText Typo="Typo.subtitle1">Color: @_reservation.Color</MudText>
                 <MudText Typo="Typo.subtitle1">Size: @_reservation.Size</MudText>
-                <MudText Typo="Typo.subtitle1">Pickup Date: @_reservation.PickupDate?.ToString("d")</MudText>
-                <MudText Typo="Typo.subtitle1">Payment Method: @_reservation.PaymentMethod</MudText>
-
-                @if (_reservation.PaymentMethod != "Cash")
-                {
-                    <MudText Typo="Typo.subtitle1">Receipt</MudText>
-                    <MudImage Src="@( $"data:image/bmp;base64,{Convert.ToBase64String(_reservation.Receipt)}" )"
-                              Class="reservation-image" />
-                }
+                <MudDatePicker Variant="Variant.Outlined" Label="Due Date" @bind-Date="_date" />
+                <MudNumericField @bind-Value="intValue" Label="Payment" Variant="Variant.Outlined" />
             </div>
 
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" FullWidth Color="Color.Warning" @onclick="Declined">Declined</MudButton>
-        <MudButton Variant="Variant.Filled" FullWidth Style="background-color: #4E3434; color:white" @onclick="Approved">Approved</MudButton>
+        <MudButton Variant="Variant.Filled" @onclick="Submit">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 
+
 @code {
     [Parameter] public Reservation _reservation { get; set; } = new Reservation();
+    [Parameter] public Rentals _rentals { get; set; } = new Rentals();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
-
-    private async Task Approved()
+    private DateTime? _date { get; set; }
+    int intValue;
+    private async Task Submit()
     {
         try
         {
-            var reservation = new Reservation
+            var rentals = new Rentals
                 {
-                    Id = _reservation.Id,
-                    Status = "Approved"
+                    Id = Guid.NewGuid().ToString(),
+                    GownId = _reservation.GownId,
+                    UserId = _reservation.UserId,
+                    Date = DateTime.Now,
+                    DueDate = _date,
+                    RentalFee = intValue,
+                    Status = "OnGoing"
                 };
             var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
-                .PutAsJsonAsync("api/Reservation/ApproveReservation", reservation);
+                .PostAsJsonAsync("api/Rental/AddRental", rentals);
             var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
             var isSuccess = response.IsSuccessStatusCode && result > 0;
             SnackBar.Add(
-                isSuccess ? "Done: Reservation Approved!" : $"Warning: {response.ReasonPhrase}",
+                isSuccess ? "Done: Rental Submitted!" : $"Warning: {response.ReasonPhrase}",
                 isSuccess ? Severity.Success : Severity.Warning
             );
             MudDialog.Close();
@@ -91,29 +91,8 @@
             SnackBar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }
-
-    private async Task Declined()
+    private async Task Cancel()
     {
-        try
-        {
-            var reservation = new Reservation
-                {
-                    Id = _reservation.Id,
-                    Status = "Declined"
-                };
-            var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
-                .PutAsJsonAsync("api/Reservation/ApproveReservation", reservation);
-            var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
-            var isSuccess = response.IsSuccessStatusCode && result > 0;
-            SnackBar.Add(
-                isSuccess ? "Done: Reservation Declined!" : $"Warning: {response.ReasonPhrase}",
-                isSuccess ? Severity.Success : Severity.Warning
-            );
-            MudDialog.Close();
-        }
-        catch (Exception ex)
-        {
-            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        }
+        MudDialog.Close();
     }
 }
