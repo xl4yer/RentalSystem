@@ -1,27 +1,31 @@
 ﻿@page "/rentals"
 @rendermode InteractiveServer
-<br />
- <MudText Typo="Typo.h5" Align="Align.Center">Rentals</MudText>
-<MudTable Class="ma-3" Dense Hover Items="@rentals"
+
+<MudTable Class="ma-3" Dense Hover Items="@rentals" Elevation="1" Style="border-radius:20px"
           HorizontalScrollbar FixedHeader FixedFooter Height="600px">
     <ToolBarContent>
+        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Rentals</MudText>
         <MudSpacer />
         <MudTextField T="string" Placeholder="Search Rentals..." Variant="Variant.Outlined" Margin="Margin.Dense" />
     </ToolBarContent>
 
     <HeaderContent>
-        @foreach (var header in new[] { "Date", "Customer Name","Gown Name","Status", "Action" })
+        @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Status", "Due Date", "Action" })
         {
             <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
         }
     </HeaderContent>
     <RowTemplate>
         <MudTd>@context.Date?.ToString("d")</MudTd>
+        <MudTd>
+            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+        </MudTd>
         <MudTd>@context.Fullname</MudTd>
         <MudTd>@context.Name</MudTd>
         <MudTd> <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : context.Status == "Returned" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
+        <MudTd>@context.DueDate?.ToString("d")</MudTd>
         <MudTd>
-            <MudFab Style="background-color:#4E3434; color:white" StartIcon="@Icons.Material.Filled.More" @onclick="() => Actions(context.Id)" Size="Size.Small" />
+            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">Actions</MudButton>
         </MudTd>
     </RowTemplate>
 </MudTable>

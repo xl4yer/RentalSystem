@@ -76,14 +76,37 @@
                     RentalFee = intValue,
                     Status = "OnGoing"
                 };
-            var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
-                .PostAsJsonAsync("api/Rental/AddRental", rentals);
-            var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
-            var isSuccess = response.IsSuccessStatusCode && result > 0;
-            SnackBar.Add(
-                isSuccess ? "Done: Rental Submitted!" : $"Warning: {response.ReasonPhrase}",
-                isSuccess ? Severity.Success : Severity.Warning
-            );
+
+            var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var rentalResponse = await httpClient.PostAsJsonAsync("api/Rental/AddRental", rentals);
+            var rentalResult = await rentalResponse.Content.ReadFromJsonAsync<int?>() ?? 0;
+
+            var isRentalSuccess = rentalResponse.IsSuccessStatusCode && rentalResult > 0;
+
+            if (isRentalSuccess)
+            {
+                // Proceed to update reservation status
+                var updatedReservation = new Reservation
+                    {
+                        Id = _reservation.Id,
+                        Status = "Rented"
+                    };
+
+                var reservationResponse = await httpClient.PutAsJsonAsync("api/Reservation/ApproveReservation", updatedReservation);
+                var reservationResult = await reservationResponse.Content.ReadFromJsonAsync<int?>() ?? 0;
+
+                var isReservationSuccess = reservationResponse.IsSuccessStatusCode && reservationResult > 0;
+
+                SnackBar.Add(
+                    isReservationSuccess ? "Done: Rental submitted and reservation updated!" : "Warning: Rental added but reservation update failed.",
+                    isReservationSuccess ? Severity.Success : Severity.Warning
+                );
+            }
+            else
+            {
+                SnackBar.Add($"Warning: Rental submission failed. {rentalResponse.ReasonPhrase}", Severity.Warning);
+            }
+
             MudDialog.Close();
         }
         catch (Exception ex)
@@ -91,6 +114,7 @@
             SnackBar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }
+
     private async Task Cancel()
     {
         MudDialog.Close();

@@ -73,7 +73,6 @@
     </TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px; padding: 20px;">
-
             <MudStepper ShowResetButton>
                 <MudStep Title="Gown Details">
                     <MudGrid Justify="Justify.Center">
@@ -94,32 +93,30 @@
                     <MudDatePicker @bind-Date="_date" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 </MudStep>
                 <MudStep Title="Payment">
-                    <MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center">
-                        <MudItem xs="6" class="text-right">
                             <MudText Align="Align.Center">Payment Method</MudText>
-                        </MudItem>
-                        <MudItem xs="6">
                             <MudSelect @bind-Value="@paymentMethod" Placeholder="Gcash" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
                                 @foreach (var payment in new[] { "Cash", "Gcash", "Paymaya" })
                                 {
                                     <MudSelectItem Value="@payment" />
                                 }
-                            </MudSelect>
-                        </MudItem>
+                            </MudSelect> 
+                            <br />
+                    <MudPaper Class="p-6 mt-6 text-center" Elevation="3" Style="border-radius: 16px; background-color: #f5f5f5;">
+                        <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
+                            Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
+                        </MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
+                            GCash: <span class="font-mono">0948 192 4095</span>
+                        </MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Dark">
+                            Maya: <span class="font-mono">0948 192 4095</span>
+                        </MudText>
+                    </MudPaper>
 
-                        <MudItem xs="6" class="text-right">
-                            <MudText Align="Align.Center">Reservation Fee</MudText>
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudTextField @bind-Value="@_reservation.ReservationFee" Margin="Margin.Dense" Variant="Variant.Outlined"></MudTextField>
-                        </MudItem>
-
+                    <br />
                         @if (paymentMethod != "Cash")
                         {
-                            <MudItem xs="6" class="text-right">
                                 <MudText Align="Align.Center">Upload Receipt</MudText>
-                            </MudItem>
-                            <MudItem xs="6">
                                 <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
                                     <ActivatorContent>
                                         <div class="payment-receipt">
@@ -127,10 +124,7 @@
                                         </div>
                                     </ActivatorContent>
                                 </MudFileUpload>
-                            </MudItem>
                         }
-                    </MudGrid>
-
                 </MudStep>
             </MudStepper>
         </MudContainer>

@@ -1,5 +1,6 @@
 ﻿@page "/userdashboard"
 @rendermode InteractiveServer
+<PageTitle>User Dashboard</PageTitle>
 
 <style>
 
@@ -37,26 +38,17 @@
     else
     {
         <NewNavMenu />
-        <br />
 
-        <MudGrid Justify="Justify.Center" Class="mt-5">
-            <MudItem xs="6">
-                <MudPaper Elevation="23" Class="pa-6" Style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                    <MudText Typo="Typo.h5" Align="Align.Center" Style="font-size:20px; font-weight: bold;">Your Reservations</MudText>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Margin="Margin.Normal" @onclick="MyReservations">My Reservations</MudButton>
-                </MudPaper>
+        <MudGrid Justify="Justify.Center" Class="mt-10 px-4">
+            <MudItem xs="12" sm="6" class="p-2">
+                <MudFab StartIcon="@Icons.Material.Filled.CheckBox" @onclick="MyReservations" Style="width:100%; background-color:#4E3434; color:white;" Label="My Reservations" />
             </MudItem>
-            <MudItem xs="6">
-                <MudPaper Elevation="23" Class="pa-6" Style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                    <MudText Typo="Typo.h5" Align="Align.Center" Style="font-size:20px; font-weight: bold;">Your Rentals</MudText>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Margin="Margin.Normal">My Rentals</MudButton>
-                </MudPaper>
+            <MudItem xs="12" sm="6" class="p-2">
+                <MudFab StartIcon="@Icons.Material.Filled.Info" @onclick="MyRentals" Style="width:100%;  background-color:#4E3434; color:white;" Label="My Rentals" />
             </MudItem>
         </MudGrid>
-
         <br>
-
-        <MudText Typo="Typo.h5" Align="Align.Center">Available Gowns</MudText>
+        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
         <br />
         <div class="row row-cols-1 row-cols-md-6 g-4">
             @foreach (var gown in gowns.Take(currentIndex))
@@ -68,6 +60,8 @@
                             <h5 class="card-title">Name: @gown.Name</h5>
                             <h6>Size: @gown.Size</h6>
                             <p>Color: @gown.Color</p>
+                            <p>Rental Fee: @gown.Fee</p>
+                            <center>  <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Style="background-color:#4E3434; color:white">Reserve Now</MudButton></center>
                         </div>
 
                     </div>
@@ -179,7 +173,18 @@
                 MaxWidth = MaxWidth.Medium,
                 FullWidth = true
             };
-
         return Dialog.ShowAsync<UserReservations>("User Reservations", options);
+    }
+
+    private Task MyRentals()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+
+        return Dialog.ShowAsync<UserRentals>("User Rentals", options);
     }
 }

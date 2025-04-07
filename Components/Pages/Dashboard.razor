@@ -1,6 +1,6 @@
 ﻿@page "/dashboard"
 @rendermode InteractiveServer
-<PageTitle>Dashboard</PageTitle>
+<PageTitle>Admin Dashboard</PageTitle>
 
 <NewNavMenu/>
 <div class="container mt-3">
@@ -14,7 +14,7 @@
     {
         <MudGrid Class="mt-3" Justify="Justify.Center">
             <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="21" Style="border-radius:25px;">
+                <MudCard Elevation="1" Style="border-radius:20px;">
                 <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
                     <DataAnnotationsValidator />
                     <MudContainer Style="max-height: 600px;">
@@ -58,13 +58,14 @@
                 </MudCard>
             </MudItem>
             <MudItem xs="12" sm="6" md="8">
-                <MudCard Elevation="23" Style="border-radius:25px;">
-                <MudToolBar Class="top-row px-3">
-                    <MudSpacer/>
-                    <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
-                </MudToolBar>
+
                 <div style="overflow-x: auto;">
-                    <MudTable Class="ma-3" Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px">
+                    <MudTable Class="ma-3" Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px" Elevation="1" Style="border-radius:20px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Gown List</MudText>
+                            <MudSpacer />
+                            <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </ToolBarContent>
                         <HeaderContent>
                             @foreach (var header in new[] {"Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Status", "Action" })
                             {
@@ -89,17 +90,17 @@
                         </RowTemplate>
                     </MudTable>
                 </div>
-                </MudCard>
+             
             </MudItem>
         </MudGrid>
         <br /> 
-        <MudCard Elevation="23" Style="border-radius:25px;">
+       
             <ReservationPage />
-        </MudCard>
+       
         <br />
-        <MudCard Elevation="23" Style="border-radius:25px;">
+      
             <RentalPage />
-        </MudCard>
+      
     }
 </div>
 
@@ -123,7 +124,7 @@
     }
 
 
-    private async Task Submit()
+    public async Task Submit()
     {
         try
         {
@@ -214,7 +215,7 @@
 
     }
 
-    private async Task LoadGowns()
+    public async Task LoadGowns()
     {
         try
         {

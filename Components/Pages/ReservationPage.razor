@@ -1,16 +1,15 @@
 ﻿@page "/reservations"
 @rendermode InteractiveServer
 
-<br />
-<MudText Typo="Typo.h5" Align="Align.Center">Reservations</MudText>
-<MudTable Class="ma-3" Dense Hover Items="@reservation"
+<MudTable Class="ma-3" Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
 HorizontalScrollbar FixedHeader FixedFooter Height="600px">
     <ToolBarContent>
+        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Reservations</MudText>
         <MudSpacer/>
         <MudTextField T="string" Placeholder="Search Reservations..." Variant="Variant.Outlined" Margin="Margin.Dense" />
     </ToolBarContent>
     <HeaderContent>
-        @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Size", "Color", "Status", "Action" })
+        @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Size", "Color", "Pickup Date", "Status", "Action" })
         {
             <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
         }
@@ -24,21 +23,27 @@ HorizontalScrollbar FixedHeader FixedFooter Height="600px">
         <MudTd>@context.Name</MudTd>
         <MudTd>@context.Size</MudTd>
         <MudTd>@context.Color</MudTd>
+        <MudTd>@context.PickupDate?.ToString("d")</MudTd>
         <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
-        @if (context.Status != "Approved")
+        @if (context.Status == "Approved")
         {
             <MudTd>
-                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">More</MudButton>
+                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
+            </MudTd>
+        }
+        else if(context.Status == "Rented")
+        {
+            <MudTd>
+                <h2>-</h2>
             </MudTd>
         }
         else
         {
             <MudTd>
                 <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">More</MudButton>
-                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
             </MudTd>
-        })
-       
+        }
+
     </RowTemplate>
 </MudTable>
 
@@ -49,7 +54,7 @@ HorizontalScrollbar FixedHeader FixedFooter Height="600px">
         if (firstRender)
             await LoadReservations();
     }
-    private async Task LoadReservations()
+    public async Task LoadReservations()
     {
         try
         {

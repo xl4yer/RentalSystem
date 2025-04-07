@@ -48,7 +48,10 @@
                             <h5 class="card-title">Name: @gown.Name</h5>
                             <h6>Size: @gown.Size</h6>
                             <p>Color: @gown.Color</p>
-                            <center>  <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Style="background-color:#4E3434; color:white">Reserve Now</MudButton></center>
+                            <p>Rental Fee: @gown.Fee</p>
+                            <center> 
+                                <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)" Style="background-color:#4E3434; color:white">Reserve Now</MudButton>
+                                </center>
                           
                         </div>
 

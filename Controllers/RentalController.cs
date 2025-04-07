@@ -22,6 +22,13 @@ namespace RentalSystem.Controllers
             return ret;
         }
 
+        [HttpGet]
+        public async Task<List<Rentals>> UserRentals(string UserId)
+        {
+            var ret = await srvcs.UserRentals(UserId);
+            return ret;
+        }
+
         [HttpPost]
         public async Task<int> AddRental([FromBody] Rentals rentals)
         {
