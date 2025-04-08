@@ -33,7 +33,7 @@
                     <MudTd>@context.Type</MudTd>
                     <MudTd>@context.Color</MudTd>
                     <MudTd>@context.Size</MudTd>
-                    <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
+                    <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : Color.Tertiary)">@context.Status</MudChip></MudTd>
 
                 </RowTemplate>
             </MudTable>

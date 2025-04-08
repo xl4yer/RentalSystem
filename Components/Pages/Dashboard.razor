@@ -2,107 +2,121 @@
 @rendermode InteractiveServer
 <PageTitle>Admin Dashboard</PageTitle>
 
-<NewNavMenu/>
-<div class="container mt-3">
-    @if (gown == null || gown.Length == 0)
-    {
-        <div class="d-flex justify-content-center my-4">
-            <div class="loader"></div>
-        </div>
-    }
-    else
-    {
-        <MudGrid Class="mt-3" Justify="Justify.Center">
-            <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="1" Style="border-radius:20px;">
-                <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
-                    <DataAnnotationsValidator />
-                    <MudContainer Style="max-height: 600px;">
-                        <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
-                            <ActivatorContent>
-                                <img src="@imgsrc"  style="max-width: 250px; border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
-                            </ActivatorContent>
-                        </MudFileUpload> <br />
-                        <MudText Align="Align.Justify">Gown Name</MudText>
-                        <MudTextField @bind-Value="@_gowns.Name"Variant="Variant.Outlined" Margin="Margin.Dense" />
-                        <MudText Align="Align.Justify">Gown Type</MudText>
-                        <MudSelect @bind-Value="@_gowns.Type"  Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var type in new[] { "Bridal", "Debut", "Filipininia", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
-                            {
-                                <MudSelectItem Value="@type" />
-                            }
-                        </MudSelect>
-                        <MudText Align="Align.Justify">Color</MudText>
-                        <MudSelect @bind-Value="@_gowns.Color"Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var color in new[] { "Black", "Blue", "Brown", "Cream", "Gold", "Gray and Silver", "Green", "Orange", "Pink", "Nude and Skintone", "Red", "Teal", "Violet and Purple", "White", "Yellow" })
-                            {
-                                <MudSelectItem Value="@color" />
-                            }
-                        </MudSelect>
-                         <MudText Align="Align.Justify">Size</MudText>
-                        <MudSelect @bind-Value="@_gowns.Size" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
-                            {
-                                <MudSelectItem Value="@size" />
-                            }
-                        </MudSelect>
-                        <MudText Align="Align.Justify">Rental Fee</MudText>
-                        <MudNumericField @bind-Value="@_gowns.Fee" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    </MudContainer> <br />
-                    <MudToolBar>
-                        <MudSpacer />
-                        <MudButton FullWidth>Clear</MudButton>
-                        <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Submit</MudButton>
-                    </MudToolBar>
-                </EditForm>
-                </MudCard>
-            </MudItem>
-            <MudItem xs="12" sm="6" md="8">
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+       <LoginButton/>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">My App</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="reservations">Reservations</MudNavLink>
+            <MudNavLink Href="rentals">Rentals</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+            <div class="container mt-3">
+                @if (gown == null || gown.Length == 0)
+                {
+                    <div class="d-flex justify-content-center my-4">
+                        <div class="loader"></div>
+                    </div>
+                }
+                else
+                {
+                    <MudGrid Class="mt-3" Justify="Justify.Center">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="1" Style="border-radius:20px;">
+                                <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
+                                    <DataAnnotationsValidator />
+                                    <MudContainer Style="max-height: 600px;">
+                                        <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
+                                            <ActivatorContent>
+                                                <img src="@imgsrc" style="max-width: 250px; border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
+                                            </ActivatorContent>
+                                        </MudFileUpload> <br />
+                                        <MudText Align="Align.Justify">Gown Name</MudText>
+                                        <MudTextField @bind-Value="@_gowns.Name" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                        <MudText Align="Align.Justify">Gown Type</MudText>
+                                        <MudSelect @bind-Value="@_gowns.Type" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                            @foreach (var type in new[] { "Bridal", "Debut", "Filipininia", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
+                                            {
+                                                <MudSelectItem Value="@type" />
+                                            }
+                                        </MudSelect>
+                                        <MudText Align="Align.Justify">Color</MudText>
+                                        <MudSelect @bind-Value="@_gowns.Color" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                            @foreach (var color in new[] { "Black", "Blue", "Brown", "Cream", "Gold", "Gray and Silver", "Green", "Orange", "Pink", "Nude and Skintone", "Red", "Teal", "Violet and Purple", "White", "Yellow" })
+                                            {
+                                                <MudSelectItem Value="@color" />
+                                            }
+                                        </MudSelect>
+                                        <MudText Align="Align.Justify">Size</MudText>
+                                        <MudSelect @bind-Value="@_gowns.Size" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                            @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
+                                            {
+                                                <MudSelectItem Value="@size" />
+                                            }
+                                        </MudSelect>
+                                        <MudText Align="Align.Justify">Rental Fee</MudText>
+                                        <MudNumericField @bind-Value="@_gowns.Fee" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    </MudContainer> <br />
+                                    <MudToolBar>
+                                        <MudSpacer />
+                                        <MudButton FullWidth>Clear</MudButton>
+                                        <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Submit</MudButton>
+                                    </MudToolBar>
+                                </EditForm>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="8">
 
-                <div style="overflow-x: auto;">
-                    <MudTable Class="ma-3" Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px" Elevation="1" Style="border-radius:20px">
-                        <ToolBarContent>
-                            <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Gown List</MudText>
-                            <MudSpacer />
-                            <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
-                        </ToolBarContent>
-                        <HeaderContent>
-                            @foreach (var header in new[] {"Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Status", "Action" })
-                            {
-                                    <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
-                            }
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd>
-                                <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-                            </MudTd>
-                            <MudTd>@context.Name</MudTd>
-                            <MudTd>@context.Type</MudTd>
-                            <MudTd>@context.Color</MudTd>
-                            <MudTd>@context.Size</MudTd>
-                            <MudTd>@context.Fee</MudTd>
-                            <MudTd>
-                                <MudChip T="string" Color="@(context.Status == "Available" ? Color.Success : context.Status == "Reserved" ? Color.Warning : Color.Info)">@context.Status</MudChip>
-                            </MudTd>
-                            <MudTd>
-                                <MudFab Style="background-color:#4E3434; color:white" @onclick="() => Update(context.Id)" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" />
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
-                </div>
-             
-            </MudItem>
-        </MudGrid>
-        <br /> 
-       
-            <ReservationPage />
-       
-        <br />
-      
-            <RentalPage />
-      
-    }
-</div>
+                            <div style="overflow-x: auto;">
+                                <MudTable Class="ma-3" Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px" Elevation="1" Style="border-radius:20px">
+                                    <ToolBarContent>
+                                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Gown List</MudText>
+                                        <MudSpacer />
+                                        <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    </ToolBarContent>
+                                    <HeaderContent>
+                                        @foreach (var header in new[] { "Photo", "Gown Name", "Type","Status", "Action" })
+                                        {
+                                            <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
+                                        }
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd>
+                                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                                        </MudTd>
+                                        <MudTd>@context.Name</MudTd>
+                                        <MudTd>@context.Type</MudTd>
+                                        <MudTd>
+                                            <MudChip T="string" Color="@(context.Status == "Available" ? Color.Success : context.Status == "Reserved" ? Color.Tertiary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info : Color.Tertiary)">@context.Status</MudChip>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudFab Style="background-color:#4E3434; color:white" @onclick="() => Update(context.Id)" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" />
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </div>
+
+                        </MudItem>
+                    </MudGrid>
+                }
+            </div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+
+
+@* <NewNavMenu/> *@
+
 
 
 @code {
@@ -116,7 +130,8 @@
     IList<IBrowserFile> files = new List<IBrowserFile>();
     public Position Position { get; set; } = Position.Left;
 
-    private bool _open = false;
+    private bool _open = true;
+    private Breakpoint _breakpoint = Breakpoint.Lg;
 
     private void ToggleDrawer()
     {

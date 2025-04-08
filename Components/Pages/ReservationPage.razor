@@ -1,53 +1,88 @@
 ﻿@page "/reservations"
 @rendermode InteractiveServer
 
-<MudTable Class="ma-3" Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
-HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-    <ToolBarContent>
-        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Reservations</MudText>
-        <MudSpacer/>
-        <MudTextField T="string" Placeholder="Search Reservations..." Variant="Variant.Outlined" Margin="Margin.Dense" />
-    </ToolBarContent>
-    <HeaderContent>
-        @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Size", "Color", "Pickup Date", "Status", "Action" })
-        {
-            <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
-        }
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd>@context.Date?.ToString("d")</MudTd>
-        <MudTd>
-            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-        </MudTd>
-        <MudTd>@context.Fullname</MudTd>
-        <MudTd>@context.Name</MudTd>
-        <MudTd>@context.Size</MudTd>
-        <MudTd>@context.Color</MudTd>
-        <MudTd>@context.PickupDate?.ToString("d")</MudTd>
-        <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
-        @if (context.Status == "Approved")
-        {
-            <MudTd>
-                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
-            </MudTd>
-        }
-        else if(context.Status == "Rented")
-        {
-            <MudTd>
-                <h2>-</h2>
-            </MudTd>
-        }
-        else
-        {
-            <MudTd>
-                <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">More</MudButton>
-            </MudTd>
-        }
+<PageTitle>Reservations</PageTitle>
 
-    </RowTemplate>
-</MudTable>
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        <LoginButton />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">My App</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="reservations">Reservations</MudNavLink>
+            <MudNavLink Href="rentals">Rentals</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+
+
+            <MudTable Class="ma-3" Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
+                      HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Reservations</MudText>
+                    <MudSpacer />
+                    <MudTextField T="string" Placeholder="Search Reservations..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </ToolBarContent>
+                <HeaderContent>
+                    @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Size", "Color", "Pickup Date", "Status", "Action" })
+                    {
+                        <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
+                    }
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Date?.ToString("d")</MudTd>
+                    <MudTd>
+                        <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                    </MudTd>
+                    <MudTd>@context.Fullname</MudTd>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>@context.Size</MudTd>
+                    <MudTd>@context.Color</MudTd>
+                    <MudTd>@context.PickupDate?.ToString("d")</MudTd>
+                    <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info :  Color.Tertiary)">@context.Status</MudChip></MudTd>
+                    @if (context.Status == "Approved")
+                    {
+                        <MudTd>
+                            <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
+                        </MudTd>
+                    }
+                    else if (context.Status == "Rented" || context.Status == ("Returned"))
+                    {
+                        <MudTd>
+                            <h2>-</h2>
+                        </MudTd>
+                    }
+                    else
+                    {
+                        <MudTd>
+                            <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">Decline/Approve</MudButton>
+                        </MudTd>
+                    }
+
+                </RowTemplate>
+            </MudTable>
+
+
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
 
 @code {
+    private bool _open = true;
+    private Breakpoint _breakpoint = Breakpoint.Lg;
+
+    private void ToggleDrawer()
+    {
+        // _open = !_open;
+    }
     private Reservation[]? reservation;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

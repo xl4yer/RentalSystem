@@ -37,6 +37,8 @@ namespace RentalSystem.Services
                         rentals.Add(new Rentals
                         {
                             Id = rdr["Id"].ToString(),
+                            GownId = rdr["GownId"].ToString(),
+                            UserId = rdr["UserId"].ToString(),
                             Fullname = rdr["Fullname"].ToString(),
                             Date = Convert.ToDateTime(rdr["Date"]),
                             DueDate = Convert.ToDateTime(rdr["DueDate"]),
@@ -118,6 +120,38 @@ namespace RentalSystem.Services
                 {
                     await con.OpenAsync().ConfigureAwait(false);
                     var com = new MySqlCommand("AddRental", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_Id", rentals.Id);
+                    com.Parameters.AddWithValue("_GownId", rentals.GownId);
+                    com.Parameters.AddWithValue("_UserId", rentals.UserId);
+                    com.Parameters.AddWithValue("_Date", rentals.Date);
+                    com.Parameters.AddWithValue("_DueDate", rentals.DueDate);
+                    com.Parameters.AddWithValue("_RentalFee", rentals.RentalFee);
+                    com.Parameters.AddWithValue("_Status", rentals.Status);
+                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return 0;
+        }
+
+        public async Task<int>Returned(Rentals rentals)
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("Returned", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };

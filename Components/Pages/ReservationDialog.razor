@@ -1,70 +1,70 @@
 ﻿<style>
     @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
+    from {
+    opacity: 0;
+    transform: scale(0.9);
+    }
 
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
+    to {
+    opacity: 1;
+    transform: scale(1);
+    }
     }
 
     .custom-dialog-title {
-        background-color: #4E3434;
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        padding: 12px;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+    background-color: #4E3434;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     }
 
     .gown-image {
-        width: 200px;
-        height: 250px;
-        border-radius: 10px;
-        margin: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s;
+    width: 200px;
+    height: 250px;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
     }
 
-        .gown-image:hover {
-            transform: scale(1.05);
-        }
+    .gown-image:hover {
+    transform: scale(1.05);
+    }
 
     .payment-container p {
-        font-weight: bold;
-        margin-bottom: 5px;
+    font-weight: bold;
+    margin-bottom: 5px;
     }
 
     .payment-receipt img {
-        width: 200px;
-        height: 200px;
-        border: 1px solid gray;
-        margin-top: 10px;
-        border-radius: 5px;
-        transition: transform 0.3s;
+    width: 200px;
+    height: 200px;
+    border: 1px solid gray;
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: transform 0.3s;
     }
 
-        .payment-receipt img:hover {
-            transform: scale(1.05);
-        }
+    .payment-receipt img:hover {
+    transform: scale(1.05);
+    }
 
     .mud-dialog {
-        animation: fadeIn 0.3s ease-in-out;
-        border-radius: 12px;
-        overflow: hidden;
+    animation: fadeIn 0.3s ease-in-out;
+    border-radius: 12px;
+    overflow: hidden;
     }
 
     .mud-button {
-        transition: background-color 0.3s, transform 0.2s;
+    transition: background-color 0.3s, transform 0.2s;
     }
 
-        .mud-button:hover {
-            transform: translateY(-2px);
-        }
+    .mud-button:hover {
+    transform: translateY(-2px);
+    }
 </style>
 
 <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
@@ -93,38 +93,39 @@
                     <MudDatePicker @bind-Date="_date" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 </MudStep>
                 <MudStep Title="Payment">
-                            <MudText Align="Align.Center">Payment Method</MudText>
-                            <MudSelect @bind-Value="@paymentMethod" Placeholder="Gcash" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                                @foreach (var payment in new[] { "Cash", "Gcash", "Paymaya" })
-                                {
-                                    <MudSelectItem Value="@payment" />
-                                }
-                            </MudSelect> 
-                            <br />
-                    <MudPaper Class="p-6 mt-6 text-center" Elevation="3" Style="border-radius: 16px; background-color: #f5f5f5;">
-                        <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
-                            Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
-                        </MudText>
-                        <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
-                            GCash: <span class="font-mono">0948 192 4095</span>
-                        </MudText>
-                        <MudText Typo="Typo.body1" Color="Color.Dark">
-                            Maya: <span class="font-mono">0948 192 4095</span>
-                        </MudText>
-                    </MudPaper>
-
-                    <br />
-                        @if (paymentMethod != "Cash")
+                    <MudText Align="Align.Center">Payment Method</MudText>
+                    <MudSelect @bind-Value="@paymentMethod" Placeholder="Gcash" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                        @foreach (var payment in new[] { "Cash", "Gcash", "Paymaya" })
                         {
-                                <MudText Align="Align.Center">Upload Receipt</MudText>
-                                <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
-                                    <ActivatorContent>
-                                        <div class="payment-receipt">
-                                            <img src="@imgsrc" />
-                                        </div>
-                                    </ActivatorContent>
-                                </MudFileUpload>
+                            <MudSelectItem Value="@payment" />
                         }
+                    </MudSelect> 
+                    <br />
+                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
+                        Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
+                    </MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
+                        GCash: <span class="font-mono">0948 192 4095</span>
+                    </MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Dark">
+                        Maya: <span class="font-mono">0948 192 4095</span>
+                    </MudText>
+                    <br />
+                    @if (paymentMethod != "Cash")
+                    {
+                        <MudText Align="Align.Center">Upload Receipt</MudText>
+                        <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
+                            <ActivatorContent>
+                                <div class="payment-receipt">
+                                    <img src="@imgsrc" />
+                                </div>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    }
+                    else
+                    {
+
+                    }
                 </MudStep>
             </MudStepper>
         </MudContainer>
@@ -193,6 +194,7 @@
                 isSuccess ? "Successfully reserved!" : $"Failed: {response.ReasonPhrase}",
                 isSuccess ? Severity.Success : Severity.Warning
             );
+            mudDialog.Close();
         }
         catch (Exception ex)
         {

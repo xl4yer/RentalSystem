@@ -1,36 +1,68 @@
 ﻿@page "/rentals"
 @rendermode InteractiveServer
 
-<MudTable Class="ma-3" Dense Hover Items="@rentals" Elevation="1" Style="border-radius:20px"
-          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-    <ToolBarContent>
-        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Rentals</MudText>
-        <MudSpacer />
-        <MudTextField T="string" Placeholder="Search Rentals..." Variant="Variant.Outlined" Margin="Margin.Dense" />
-    </ToolBarContent>
+<PageTitle>Rentals</PageTitle>
 
-    <HeaderContent>
-        @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Status", "Due Date", "Action" })
-        {
-            <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
-        }
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd>@context.Date?.ToString("d")</MudTd>
-        <MudTd>
-            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-        </MudTd>
-        <MudTd>@context.Fullname</MudTd>
-        <MudTd>@context.Name</MudTd>
-        <MudTd> <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : context.Status == "Returned" ? Color.Warning : Color.Info)">@context.Status</MudChip></MudTd>
-        <MudTd>@context.DueDate?.ToString("d")</MudTd>
-        <MudTd>
-            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">Actions</MudButton>
-        </MudTd>
-    </RowTemplate>
-</MudTable>
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        <LoginButton />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">My App</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="reservations">Reservations</MudNavLink>
+            <MudNavLink Href="rentals">Rentals</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+            <MudTable Class="ma-3" Dense Hover Items="@rentals" Elevation="1" Style="border-radius:20px"
+                      HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Rentals</MudText>
+                    <MudSpacer />
+                    <MudTextField T="string" Placeholder="Search Rentals..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                </ToolBarContent>
+
+                <HeaderContent>
+                    @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Status", "Action", "Due Date" })
+                    {
+                        <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
+                    }
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Date?.ToString("d")</MudTd>
+                    <MudTd>
+                        <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                    </MudTd>
+                    <MudTd>@context.Fullname</MudTd>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>@context.DueDate?.ToString("d")</MudTd>
+                    <MudTd> <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : context.Status == "Returned" ? Color.Tertiary : Color.Info)">@context.Status</MudChip></MudTd>
+                    <MudTd>
+                        <MudButton Variant="Variant.Filled" Size="Size.Small" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">Return</MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+
 
 @code {
+    private bool _open = true;
+    private Breakpoint _breakpoint = Breakpoint.Lg;
+
+    private void ToggleDrawer()
+    {
+        // _open = !_open;
+    }
     private Rentals[]? rentals;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -57,7 +89,17 @@
 
     private async Task Actions(string id)
     {
-       
+        var parameters = new DialogParameters();
+        var update = rentals.FirstOrDefault(_ => _.Id == id);
+        parameters.Add("_rentals", update);
+
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+
+        var dialog = await Dialog.Show<RentalActions>("", parameters, options).Result;
     }
 
     public async Task AddRental()

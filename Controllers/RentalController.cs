@@ -35,5 +35,12 @@ namespace RentalSystem.Controllers
             var ret = await srvcs.AddRental(rentals);
             return ret;
         }
+
+        [HttpPut]
+        public async Task<int> Returned([FromBody] Rentals rentals)
+        {
+            var ret = await srvcs.Returned(rentals);
+            return ret;
+        }
     }
 }
