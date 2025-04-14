@@ -54,7 +54,7 @@
             </MudContainer> <br />
             <MudToolBar>
                 <MudSpacer />
-                <MudButton FullWidth>Cancel</MudButton>
+                <MudButton FullWidth @onclick="Cancel">Cancel</MudButton>
                 <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Update</MudButton>
             </MudToolBar>
         </DialogContent>
@@ -74,6 +74,11 @@
     public void OnValidSubmit(EditContext context)
     {
 
+    }
+
+    void Cancel()
+    {
+        MudDialog.Close();
     }
 
     private async  Task Submit()

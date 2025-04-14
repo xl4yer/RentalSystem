@@ -13,7 +13,7 @@
         </MudContainer> 
         <MudToolBar>
             <MudSpacer />
-            <MudButton FullWidth>Cancel</MudButton>
+            <MudButton FullWidth @onclick="Cancel">Cancel</MudButton>
             <MudButton FullWidth Variant="Variant.Filled" @onclick="Confirm" Style="background-color:#4E3434; color:white">Confirm</MudButton>
         </MudToolBar>
     </DialogContent>
@@ -25,6 +25,12 @@
     [Parameter] public Reservation _reservation { get; set; } = new Reservation();
     [Parameter] public Gowns _gowns { get; set; } = new Gowns();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 
     private async Task Confirm()
     {

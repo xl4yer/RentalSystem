@@ -19,6 +19,8 @@
         public double Fee { get; set; }
 
         public string Status { get; set; } = "";
+
+        public double RentalFee { get; set; }
     }
 
 

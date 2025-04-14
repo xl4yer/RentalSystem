@@ -23,6 +23,13 @@ namespace RentalSystem.Controllers
             return ret;
         }
 
+        [HttpGet]
+        public async Task<List<Reservation>> Receipt()
+        {
+            var ret = await srvcs.Receipt();
+            return ret;
+        }
+
         [HttpPost]
         public async Task<int> AddReservation([FromBody] Reservation reservation)
         {

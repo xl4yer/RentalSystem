@@ -68,6 +68,43 @@ namespace RentalSystem.Services
             return reservation;
         }
 
+
+        public async Task<List<Reservation>> Receipt()
+        {
+            List<Reservation> receipt = new List<Reservation>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("Receipt", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        receipt.Add(new Reservation
+                        {
+                            Id = rdr["Id"].ToString(),
+                            RentalFee = Convert.ToDouble(rdr["RentalFee"]),
+                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return receipt;
+        }
+
         public async Task<int> AddReservation(Reservation reservation)
         {
             using (var con = new MySqlConnection(_constring.GetConnection()))

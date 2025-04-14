@@ -24,6 +24,13 @@ namespace RentalSystem.Controllers
         }
 
         [HttpGet]
+        public async Task<List<Gowns>> SearchGown(string search)
+        {
+            var ret = await srvcs.SearchGown(search);
+            return ret;
+        }
+
+        [HttpGet]
         public async Task<List<Gowns>> AvailableGowns()
         {
             var ret = await srvcs.AvailableGowns();

@@ -9,16 +9,6 @@ else
     <MudButton Style="color:white" @onclick="Login" Variant="Variant.Text">Login</MudButton>
 }
 
-@code {
-    private async Task ForceLogout()
-    {
-        Logout();
-        await JS.InvokeVoidAsync("forceReload1");
-    }
-
-    [Inject] IJSRuntime JS { get; set; }
-}
-
 
 @code {
     private string token;
@@ -39,4 +29,12 @@ else
         Loc.RemoveItemAsync("token");
         Nav.NavigateTo("/");
     }
-  }
+
+    private async Task ForceLogout()
+    {
+        Logout();
+        await JS.InvokeVoidAsync("forceReload1");
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

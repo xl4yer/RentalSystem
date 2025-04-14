@@ -11,7 +11,7 @@
     </MudAppBar>
     <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h6">My App</MudText>
+            <MudText Typo="Typo.h6">V.O.W</MudText>
         </MudDrawerHeader>
         <MudNavMenu>
             <MudNavLink Href="dashboard">Dashboard</MudNavLink>
@@ -19,57 +19,69 @@
             <MudNavLink Href="rentals">Rentals</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
-    <MudMainContent Class="pt-16 px-16">
-        <MudContainer Class="mt-6">
+    <MudMainContent>
+        <MudContainer>
+            <div class="container mt-3">
+                @if (reservation == null || reservation.Length == 0)
+                {
+                    <div class="d-flex justify-content-center my-4">
+                        <div class="loader"></div>
+                    </div>
+                }
+                else
+                {
+                    <MudTable Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
+                    HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                        <ToolBarContent>
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadReservations">Refresh</MudButton>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Size", "Color", "Pickup Date", "Status", "Action" })
+                            {
+                                <MudTh>@header</MudTh>
+                            }
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.Date?.ToString("d")</MudTd>
+                            <MudTd>
+                                <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                            </MudTd>
+                            <MudTd>@context.Fullname</MudTd>
+                            <MudTd>@context.Name</MudTd>
+                            <MudTd>@context.Size</MudTd>
+                            <MudTd>@context.Color</MudTd>
+                            <MudTd>@context.PickupDate?.ToString("d")</MudTd>
+                            <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info :  Color.Tertiary)">@context.Status</MudChip></MudTd>
+                            @if (context.Status == "Approved")
+                            {
+                                <MudTd>
+                                    <MudButton Variant="Variant.Filled" Style="font-size:10px" @onclick="() => AddToRentals(context.Id)" Color="Color.Secondary">Add To Rentals</MudButton>
+                                </MudTd>
+                            }
+                            else if (context.Status == "Rented")
+                            {
+                                <MudTd>
+                                    <MudButton Variant="Variant.Filled" Style="font-size:10px" Color="Color.Secondary" @onclick="() => Print(context.Id)">Print Receipt</MudButton>
+                                </MudTd>
+                            }
+                            else if (context.Status == "Returned")
+                            {
+                                <MudTd><h1>-</h1></MudTd>
+                            }
+                            else
+                            {
+                                <MudTd>
+                                    <MudButton Variant="Variant.Filled" @onclick="() => Actions(context.Id)" Style="font-size:10px" Color="Color.Secondary">Approve/Decline</MudButton>
+                                </MudTd>
+                            }
 
-
-            <MudTable Class="ma-3" Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
-                      HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-                <ToolBarContent>
-                    <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script'">Reservations</MudText>
-                    <MudSpacer />
-                    <MudTextField T="string" Placeholder="Search Reservations..." Variant="Variant.Outlined" Margin="Margin.Dense" />
-                </ToolBarContent>
-                <HeaderContent>
-                    @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Size", "Color", "Pickup Date", "Status", "Action" })
-                    {
-                        <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
-                    }
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Date?.ToString("d")</MudTd>
-                    <MudTd>
-                        <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-                    </MudTd>
-                    <MudTd>@context.Fullname</MudTd>
-                    <MudTd>@context.Name</MudTd>
-                    <MudTd>@context.Size</MudTd>
-                    <MudTd>@context.Color</MudTd>
-                    <MudTd>@context.PickupDate?.ToString("d")</MudTd>
-                    <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info :  Color.Tertiary)">@context.Status</MudChip></MudTd>
-                    @if (context.Status == "Approved")
-                    {
-                        <MudTd>
-                            <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => AddToRentals(context.Id)" Style="background-color:#4E3434; color:white">Add to Rentals</MudButton>
-                        </MudTd>
-                    }
-                    else if (context.Status == "Rented" || context.Status == ("Returned"))
-                    {
-                        <MudTd>
-                            <h2>-</h2>
-                        </MudTd>
-                    }
-                    else
-                    {
-                        <MudTd>
-                            <MudButton Variant="Variant.Filled" Size="Size.Medium" @onclick="() => Actions(context.Id)" Style="background-color:#4E3434; color:white">Decline/Approve</MudButton>
-                        </MudTd>
-                    }
-
-                </RowTemplate>
-            </MudTable>
-
-
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </div>
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -78,10 +90,47 @@
 @code {
     private bool _open = true;
     private Breakpoint _breakpoint = Breakpoint.Lg;
+    private string txtsearch = string.Empty;
+    public async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(txtsearch))
+        {
+            SnackBar.Add("Please enter a search term.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Nav.BaseUri);
+                var token = await Loc.GetItemAsStringAsync("token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                string searchQuery = Uri.EscapeDataString(txtsearch);
+                HttpResponseMessage response = await client.GetAsync($"api/Reservation/SearchReservation?search={searchQuery}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string contentResponse = await response.Content.ReadAsStringAsync();
+                    reservation = JsonConvert.DeserializeObject<Reservation[]>(contentResponse);
+                    StateHasChanged();
+                }
+                else
+                {
+                    SnackBar.Add($"Warning: {response.StatusCode}", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
 
     private void ToggleDrawer()
     {
-        // _open = !_open;
+        _open = !_open;
     }
     private Reservation[]? reservation;
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -89,6 +138,19 @@
         if (firstRender)
             await LoadReservations();
     }
+
+    private async Task Print(string id)
+    {
+        var parameters = new DialogParameters
+    {
+        { "Id", id }
+    };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+
+        Dialog.Show<Print>("Print Receipt", parameters, options);
+    }
+
     public async Task LoadReservations()
     {
         try

@@ -1,0 +1,30 @@
+﻿@page "/print/{id}"
+
+<MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
+    <TitleContent><MudText Typo="Typo.h6" Style="color:white">Update</MudText></TitleContent>
+    <DialogContent>
+        <MudContainer Style="max-height: 650px;">
+            <p>@_reservation.ReservationFee</p>
+            <p>@_reservation.RentalFee</p>
+            <p>Total: @(_reservation.ReservationFee + _reservation.RentalFee)</p>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+
+@code {
+    [Parameter] public string id { get; set; }
+    [Parameter] public Reservation _reservation { get; set; } = new Reservation();
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        string apiUrl = $"{Nav.BaseUri}api/Reservation/Receipt";
+        var response = await Http.GetAsync(apiUrl);
+        response.EnsureSuccessStatusCode();
+        string responseBodyJson = await response.Content.ReadAsStringAsync();
+        var clr = JsonConvert.DeserializeObject<List<Reservation>>(responseBodyJson);
+        _reservation = clr.Where(x => x.Id == id).FirstOrDefault();
+    }
+
+}

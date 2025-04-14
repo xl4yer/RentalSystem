@@ -10,7 +10,7 @@
     </MudAppBar>
     <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h6">My App</MudText>
+            <MudText Typo="Typo.h6">V.O.W</MudText>
         </MudDrawerHeader>
         <MudNavMenu>
             <MudNavLink Href="dashboard">Dashboard</MudNavLink>
@@ -18,8 +18,8 @@
             <MudNavLink Href="rentals">Rentals</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
-    <MudMainContent Class="pt-16 px-16">
-        <MudContainer Class="mt-6">
+    <MudMainContent>
+        <MudContainer>
             <div class="container mt-3">
                 @if (gown == null || gown.Length == 0)
                 {
@@ -77,16 +77,17 @@
                         <MudItem xs="12" sm="6" md="8">
 
                             <div style="overflow-x: auto;">
-                                <MudTable Class="ma-3" Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px" Elevation="1" Style="border-radius:20px">
+                                <MudTable Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px" Elevation="1" Style="border-radius:20px">
                                     <ToolBarContent>
-                                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Gown List</MudText>
+                                        <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="LoadGowns">Refresh</MudButton>
                                         <MudSpacer />
-                                        <MudTextField T="string" Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                        <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                                        <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
                                     </ToolBarContent>
                                     <HeaderContent>
                                         @foreach (var header in new[] { "Photo", "Gown Name", "Type","Status", "Action" })
                                         {
-                                            <MudTh Style="background-color: #4E3434; color: white;">@header</MudTh>
+                                            <MudTh>@header</MudTh>
                                         }
                                     </HeaderContent>
                                     <RowTemplate>
@@ -99,7 +100,7 @@
                                             <MudChip T="string" Color="@(context.Status == "Available" ? Color.Success : context.Status == "Reserved" ? Color.Tertiary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info : Color.Tertiary)">@context.Status</MudChip>
                                         </MudTd>
                                         <MudTd>
-                                            <MudFab Style="background-color:#4E3434; color:white" @onclick="() => Update(context.Id)" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" />
+                                            <MudButton Variant="Variant.Filled" @onclick="() => Update(context.Id)" Style="font-size:10px" Color="Color.Secondary">Edit</MudButton>
                                         </MudTd>
                                     </RowTemplate>
                                 </MudTable>
@@ -129,15 +130,42 @@
     [Parameter] public byte[] _photo { get; set; } = null!;
     IList<IBrowserFile> files = new List<IBrowserFile>();
     public Position Position { get; set; } = Position.Left;
+    private string txtsearch { get; set; } = string.Empty;
 
     private bool _open = true;
     private Breakpoint _breakpoint = Breakpoint.Lg;
 
     private void ToggleDrawer()
     {
-        // _open = !_open;
+        _open = !_open;
     }
 
+    public async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(txtsearch))
+        {
+            SnackBar.Add("Please enter a search term.", Severity.Warning);
+            return;
+        }
+       
+        using (HttpClient client = new HttpClient())
+        {
+            client.BaseAddress = new Uri($"{Nav.BaseUri}");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+            await Loc.GetItemAsStringAsync("token"));
+            HttpResponseMessage response = await client.GetAsync($"api/Gown/SearchGown?search={txtsearch}");
+            if (response.IsSuccessStatusCode)
+            {
+                string contentrespose = await response.Content.ReadAsStringAsync();
+                gown = JsonConvert.DeserializeObject<Gowns[]>(contentrespose);
+                StateHasChanged();
+            }
+            else
+            {
+                SnackBar.Add($"Warning: {response.StatusCode}", Severity.Warning);
+            }
+        }
+    }
 
     public async Task Submit()
     {

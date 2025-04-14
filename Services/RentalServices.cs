@@ -66,6 +66,54 @@ namespace RentalSystem.Services
             return rentals;
         }
 
+        public async Task<List<Rentals>> SearchRentals(string search)
+        {
+            List<Rentals> rentals = new List<Rentals>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("SearchRentals", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("search", search);
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        rentals.Add(new Rentals
+                        {
+                            Id = rdr["Id"].ToString(),
+                            GownId = rdr["GownId"].ToString(),
+                            UserId = rdr["UserId"].ToString(),
+                            Fullname = rdr["Fullname"].ToString(),
+                            Date = Convert.ToDateTime(rdr["Date"]),
+                            DueDate = Convert.ToDateTime(rdr["DueDate"]),
+                            Type = rdr["Type"].ToString(),
+                            Photo = rdr["Photo"] as byte[],
+                            Name = rdr["Name"].ToString(),
+                            Color = rdr["Color"].ToString(),
+                            Size = rdr["Size"].ToString(),
+                            RentalFee = Convert.ToDouble(rdr["RentalFee"]),
+                            Status = rdr["Status"].ToString(),
+                        });
+
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return rentals;
+        }
+
         public async Task<List<Rentals>> UserRentals(string UserId)
         {
             List<Rentals> rentals = new List<Rentals>();
