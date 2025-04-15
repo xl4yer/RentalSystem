@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Pos.Services;
 using RentalSystem.Models;
 using RentalSystem.Services;
@@ -10,10 +11,12 @@ namespace RentalSystem.Controllers
     public class GownController : Controller
     {
         GownServices srvcs;
+        IHubContext<Hub> _hub;
 
-        public GownController(GownServices srvcs)
+        public GownController(GownServices srvcs, IHubContext<Hub> hubContext)
         {
             this.srvcs = srvcs;
+            _hub = hubContext;
         }
 
         [HttpGet]

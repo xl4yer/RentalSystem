@@ -7,16 +7,14 @@
 
 
 <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
-    <TitleContent><MudText Typo="Typo.h6" Style="color:white">Returned Item</MudText></TitleContent>
+    <TitleContent><MudText Typo="Typo.h6" Style="color:white">Return Item</MudText></TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px;">
         </MudContainer> 
-        <MudToolBar>
-            <MudSpacer />
-            <MudButton FullWidth @onclick="Cancel">Cancel</MudButton>
-            <MudButton FullWidth Variant="Variant.Filled" @onclick="Confirm" Style="background-color:#4E3434; color:white">Confirm</MudButton>
-        </MudToolBar>
     </DialogContent>
+    <DialogActions>
+        <MudButton FullWidth Variant="Variant.Filled" @onclick="Confirm" Style="background-color:#4E3434; color:white">Confirm</MudButton>
+    </DialogActions>
 
 </MudDialog>
 

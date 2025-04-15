@@ -17,10 +17,9 @@
         public double ReservationFee { get; set; } = 500;
         public byte[]? Receipt { get; set; }
         public double Fee { get; set; }
-
         public string Status { get; set; } = "";
-
         public double RentalFee { get; set; }
+        public DateTime? DueDate { get; set; }
     }
 
 

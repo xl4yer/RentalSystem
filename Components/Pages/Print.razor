@@ -1,20 +1,51 @@
 ﻿@page "/print/{id}"
 
+<style>
+    .custom-dialog-title {
+    background-color: #4E3434;
+    color: white;
+    }
+</style>
+
 <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
-    <TitleContent><MudText Typo="Typo.h6" Style="color:white">Update</MudText></TitleContent>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Style="color:white; padding-left: 16px;">
+            Receipt Preview
+        </MudText>
+    </TitleContent>
+
     <DialogContent>
-        <MudContainer Style="max-height: 650px;">
-            <p>@_reservation.ReservationFee</p>
-            <p>@_reservation.RentalFee</p>
-            <p>Total: @(_reservation.ReservationFee + _reservation.RentalFee)</p>
-        </MudContainer>
+     
+            <MudText Typo="Typo.h5" Align="Align.Center">VERGO ONLINE WEAR</MudText>
+        <MudDivider Class="my-2" />
+            <MudText Typo="Typo.subtitle2">Date: @DateTime.Now.ToString("MMMM dd, yyyy")</MudText>
+            <MudText Typo="Typo.body2">Reservation Fee - ₱@_reservation.ReservationFee</MudText>
+            <MudText Typo="Typo.body2">Remaining Fee - ₱@_reservation.RentalFee</MudText>
+            <MudDivider Class="my-2" />
+        @if (_reservation != null)
+        {
+            <MudText Typo="Typo.h6" Align="Align.Right">
+                Total: ₱@(_reservation.ReservationFee + _reservation.RentalFee)
+            </MudText>
+        }
+
+            <MudDivider Class="my-2" />
+
+            <MudText Typo="Typo.caption" Align="Align.Center">Thank you for your purchase!</MudText>
+       
     </DialogContent>
+
+    <DialogActions>
+        <MudButton FullWidth OnClick="@DoPrint" Style="background-color:#4E3434; color:white" Variant="Variant.Filled">Print Now</MudButton>
+    </DialogActions>
 </MudDialog>
 
 
 @code {
+
     [Parameter] public string id { get; set; }
     [Parameter] public Reservation _reservation { get; set; } = new Reservation();
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
 
 
     protected override async Task OnParametersSetAsync()
@@ -27,4 +58,105 @@
         _reservation = clr.Where(x => x.Id == id).FirstOrDefault();
     }
 
+    // An Installed Printer instance
+    private InstalledPrinter MyPrinter { get; set; } = new();
+    // Use default printer?
+    private bool UseDefaultPrinter = true;
+
+    // Printing...
+    private void DoPrint()
+    {
+        // Check if JSPM Client App is up and running
+        if (JSPrintManager.Status == JSPMWSStatus.Open)
+        {
+            // Create a ClientPrintJob
+            var cpj = new ClientPrintJob();
+
+            // Set target printer
+            cpj.ClientPrinter = UseDefaultPrinter ? new DefaultPrinter() : MyPrinter;
+
+            // ESC/POS control characters
+            char esc = (char)0x1B;
+            char newLine = (char)0x0A;
+
+            // Start building printer commands
+            var cmds = new StringBuilder();
+
+            cmds.Append(esc + "@"); // Initialize printer
+            cmds.Append(esc + "!" + (char)0x18); // Double height + width, bold
+            cmds.Append("Vergo Online Wear");
+            cmds.Append(newLine);
+            cmds.Append(esc + "!" + (char)0x00); // Reset to normal formatting
+            cmds.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+            if (_reservation != null)
+            {
+                cmds.AppendLine($"Name: {_reservation.Fullname}");
+                cmds.AppendLine($"Gown Name: {_reservation.Name}");
+                cmds.AppendLine($"Color: {_reservation.Color}");
+                cmds.AppendLine($"Size: {_reservation.Size}");
+                cmds.AppendLine($"Type: {_reservation.Type}");
+                cmds.AppendLine($"Reservation Fee: {_reservation.ReservationFee}");
+                cmds.AppendLine($"Additional Fee: {_reservation.RentalFee}");
+                cmds.AppendLine($"DueDate: {_reservation.DueDate?.ToString("yyyy-MM-dd")}");
+                cmds.AppendLine($"Total: {_reservation.ReservationFee + _reservation.RentalFee}");
+            }
+            else
+            {
+                cmds.AppendLine("Reservation data is not available.");
+            }
+
+            cmds.Append(esc + "!" + (char)0x18); // Medium text
+            cmds.Append(newLine);
+
+            // Assign the command string
+            cpj.PrinterCommands = cmds.ToString();
+
+            // Send the job to the client printer
+            JSPrintManager.SendClientPrintJob(cpj);
+        }
+        MudDialog.Close();
+    }
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Handle OnGetPrinters event...
+            JSPrintManager.OnGetPrinters += () =>
+            {
+                if (JSPrintManager.Printers != null &&
+                    JSPrintManager.Printers.Length > 0)
+                {
+                    // Display installed printers...
+                    StateHasChanged();
+                }
+                else
+                {
+                    Console.WriteLine("No printers found...");
+                }
+
+            };
+
+            // Handle OnStatusChanged event to detect any WSS status change
+            JSPrintManager.OnStatusChanged += () =>
+            {
+                StateHasChanged();
+
+                // Status = Open means that JSPM Client App is up and running!
+                if (JSPrintManager.Status == JSPMWSStatus.Open)
+                {
+                    //Try getting local printers...
+                    JSPrintManager.TryGetPrinters();
+                }
+            };
+
+            // Start WebSocket comm
+            JSPrintManager.Start();
+        }
+
+        base.OnAfterRender(firstRender);
+    }
 }
+

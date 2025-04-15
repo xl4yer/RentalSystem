@@ -100,6 +100,24 @@
     private string txtsearch { get; set; } = string.Empty;
     private string token;
 
+    protected HubConnection hubConnection;
+
+    protected async override Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/hub"))
+            .Build();
+
+        hubConnection.On("client", async () =>
+        {
+            await LoadGown();
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -138,6 +156,11 @@
 
     private async Task LoadGown()
     {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendClient");
+        }
+
         try
         {
             using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };

@@ -89,6 +89,13 @@ namespace RentalSystem.Services
                             Id = rdr["Id"].ToString(),
                             RentalFee = Convert.ToDouble(rdr["RentalFee"]),
                             ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
+                            Fullname = rdr["Fullname"].ToString(),
+                            Name = rdr["Name"].ToString(),
+                            Color = rdr["Color"].ToString(),
+                            Size = rdr["Size"].ToString(),
+                            Type = rdr["Type"].ToString(),
+                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            DueDate = Convert.ToDateTime(rdr["DueDate"]),
                         });
                     }
                     await rdr.CloseAsync().ConfigureAwait(false);
