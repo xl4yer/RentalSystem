@@ -5,8 +5,8 @@
 
 <style>
     .custom-dialog-title {
-        background-color: #4E3434;
-        color: white;
+    background-color: #4E3434;
+    color: white;
     }
 </style>
 
@@ -17,29 +17,39 @@
     </TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px;">
+            @if (rentals == null || rentals.Length == 0)
+            {
+                <div class="text-center my-4">
+                    <h4>No records found</h4>
+                </div>
+            }
+            else
+            {
+                <MudTable Class="ma-3" Dense Hover Items="@rentals" FixedHeader FixedFooter Height="600px">
+                    <HeaderContent>
+                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Status" })
+                        {
+                            <MudTh>@header</MudTh>
+                        }
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                        </MudTd>
+                        <MudTd>@context.Name</MudTd>
+                        <MudTd>@context.Type</MudTd>
+                        <MudTd>@context.Color</MudTd>
+                        <MudTd>@context.Size</MudTd>
+                        <MudTd>
+                            <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : Color.Tertiary)">
+                                @context.Status
+                            </MudChip>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
 
-            <MudTable Class="ma-3" Dense Hover Items="@rentals" FixedHeader FixedFooter Height="600px">
-                <HeaderContent>
-                    @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Status" })
-                    {
-                        <MudTh>@header</MudTh>
-                    }
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>
-                        <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
-                    </MudTd>
-                    <MudTd>@context.Name</MudTd>
-                    <MudTd>@context.Type</MudTd>
-                    <MudTd>@context.Color</MudTd>
-                    <MudTd>@context.Size</MudTd>
-                    <MudTd>
-                        <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : Color.Tertiary)">
-                            @context.Status
-                        </MudChip>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+          
         </MudContainer>
     </DialogContent>
 </MudDialog>

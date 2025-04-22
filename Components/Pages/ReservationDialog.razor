@@ -125,7 +125,8 @@
                     PaymentMethod = paymentMethod,
                     ReservationFee = 500,
                     Receipt = _photo,
-                    Status = "Pending"
+                    Status = "Pending",
+                    RentalFee = _gowns.Fee,
                 };
             using var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
             var response = await httpClient.PostAsJsonAsync("api/Reservation/AddReservation", reservation);

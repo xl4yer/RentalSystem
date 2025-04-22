@@ -27,6 +27,7 @@
                         <MudText Typo="Typo.body1">Size: @_reservation.Size</MudText>
                         <MudText Typo="Typo.body1">Pickup Date: @_reservation.PickupDate?.ToString("d")</MudText>
                         <MudText Typo="Typo.body1">Payment Method: @_reservation.PaymentMethod</MudText>
+                        <MudText Typo="Typo.body1">Reservation Fee: @_reservation.ReservationFee</MudText>
                         <br />
                         @if (_reservation.PaymentMethod != "Cash")
                         {
