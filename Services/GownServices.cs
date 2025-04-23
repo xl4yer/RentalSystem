@@ -60,6 +60,132 @@ namespace RentalSystem.Services
             return gown;
         }
 
+        public async Task<List<Gowns>> GetGownsByType(string type)
+        {
+            List<Gowns> gown = new List<Gowns>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("GetGownsByType", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_Type", type);
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        gown.Add(new Gowns
+                        {
+                            Id = rdr["Id"].ToString(),
+                            Type = rdr["Type"].ToString(),
+                            Photo = rdr["Photo"] as byte[],
+                            Name = rdr["Name"].ToString(),
+                            Color = rdr["Color"].ToString(),
+                            Size = rdr["Size"].ToString(),
+                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            Status = rdr["Status"].ToString()
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return gown;
+        }
+
+        public async Task<List<Gowns>> GetGownsByColor(string type)
+        {
+            List<Gowns> gown = new List<Gowns>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("GetGownsByColor", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_Color", type);
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        gown.Add(new Gowns
+                        {
+                            Id = rdr["Id"].ToString(),
+                            Type = rdr["Type"].ToString(),
+                            Photo = rdr["Photo"] as byte[],
+                            Name = rdr["Name"].ToString(),
+                            Color = rdr["Color"].ToString(),
+                            Size = rdr["Size"].ToString(),
+                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            Status = rdr["Status"].ToString()
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return gown;
+        }
+
+        public async Task<List<Gowns>> GetGownsBySize(string size)
+        {
+            List<Gowns> gown = new List<Gowns>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("GetGownsBySize", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("_Size", size);
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        gown.Add(new Gowns
+                        {
+                            Id = rdr["Id"].ToString(),
+                            Type = rdr["Type"].ToString(),
+                            Photo = rdr["Photo"] as byte[],
+                            Name = rdr["Name"].ToString(),
+                            Color = rdr["Color"].ToString(),
+                            Size = rdr["Size"].ToString(),
+                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            Status = rdr["Status"].ToString()
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return gown;
+        }
+
         public async Task<List<Gowns>> SearchGown(string search)
         {
             List<Gowns> gown = new List<Gowns>();

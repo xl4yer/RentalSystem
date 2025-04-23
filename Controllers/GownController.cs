@@ -27,6 +27,27 @@ namespace RentalSystem.Controllers
         }
 
         [HttpGet]
+        public async Task<List<Gowns>> GetGownsByType(string type)
+        {
+            var ret = await srvcs.GetGownsByType(type);
+            return ret;
+        }
+
+        [HttpGet]
+        public async Task<List<Gowns>> GetGownsBySize(string size)
+        {
+            var ret = await srvcs.GetGownsBySize(size);
+            return ret;
+        }
+
+        [HttpGet]
+        public async Task<List<Gowns>> GetGownsByColor(string color)
+        {
+            var ret = await srvcs.GetGownsByColor(color);
+            return ret;
+        }
+
+        [HttpGet]
         public async Task<List<Gowns>> SearchGown(string search)
         {
             var ret = await srvcs.SearchGown(search);

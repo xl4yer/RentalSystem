@@ -5,25 +5,25 @@
 <style>
 
     @@media (max-width: 767px) {
-        .container .row {
-            --bs-gutter-x: 1.5rem;
-            --bs-gutter-y: 1rem;
-        }
+    .container .row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1rem;
+    }
 
-            .container .row > .col {
-                flex: 0 0 auto;
-                width: 50%;
-            }
+    .container .row > .col {
+    flex: 0 0 auto;
+    width: 50%;
+    }
     }
 
     .d-flex {
-        padding-top: 250px;
+    padding-top: 250px;
     }
 
     /*   .card-img-top{
-        height: 270px;
-        object-fit: cover;
-        } */
+    height: 270px;
+    object-fit: cover;
+    } */
 </style>
 
 <NewNavMenu />
@@ -48,9 +48,42 @@
             </MudItem>
         </MudGrid>
         <br>
-        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
+        <MudToolBar>
+
+            <MudMenu Label="Categories" Dense ="true">
+                <MudMenu Label="Type" Dense="true">
+                    @foreach (var type in new[] { "Bridal", "Debut", "Filipiniana", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
+                    {
+                        <MudMenuItem Label="@type" @onclick="() => LoadGownsByType(type)" />
+                    }
+                </MudMenu>
+                <MudMenu Dense="true" Label="Color">
+                    @foreach (var color in new[]
+                {
+                "Black", "Blue", "Brown", "Cream", "Gold", "Gray & Silver", "Green",
+                "Orange", "Pink", "Nude & Skintone", "Red", "Teal", "Violet & Purple"
+                })
+                    {
+                        <MudMenuItem Label="@color" @onclick="() => LoadGownsByColor(color)" />
+                    }
+                </MudMenu>
+                <MudMenu Dense="true" Label="Size">
+                    @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
+                    {
+                        <MudMenuItem Label="@size" @onclick="() => LoadGownsBySize(size)" />
+                    }
+                </MudMenu>
+            </MudMenu>
+            <MudSpacer />
+            <MudText Typo="Typo.h5" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
+            <MudSpacer/>
+            <MudButton Variant="Variant.Text" @onclick="SizeChart">Size Chart</MudButton>
+        </MudToolBar>
+
         <br />
+
         <div class="row row-cols-1 row-cols-md-6 g-4">
+
             @foreach (var gown in gowns.Take(currentIndex))
             {
                 <div class="col">
@@ -58,6 +91,7 @@
                         <img src="data:image/bmp;base64, @(Convert.ToBase64String(gown.Photo))" class="card-img-top" alt="@gown.Name">
                         <div class="card-body">
                             <h5 class="card-title">Name: @gown.Name</h5>
+                            <p>Type: @gown.Type</p>
                             <h6>Size: @gown.Size</h6>
                             <p>Color: @gown.Color</p>
                             <p>Rental Fee: @gown.Fee</p>
@@ -111,12 +145,88 @@
         hubConnection.On("client", async () =>
         {
             await LoadGown();
-            StateHasChanged();
         });
 
         await hubConnection.StartAsync();
     }
 
+    private Task SizeChart()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true 
+            };
+        return Dialog.ShowAsync<BySize>("Size Chart", options);
+    }
+
+
+    private async Task LoadGownsByType(string type)
+    {
+        await hubConnection.StopAsync();
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Gown/GetGownsByType?type={type}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+    private async Task LoadGownsByColor(string color)
+    {
+        await hubConnection.StopAsync();
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Gown/GetGownsByColor?color={color}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+    private async Task LoadGownsBySize(string size)
+    {
+        await hubConnection.StopAsync();
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Gown/GetGownsBySize?size={size}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -156,6 +266,7 @@
 
     private async Task LoadGown()
     {
+
         if (hubConnection is not null)
         {
             await hubConnection.SendAsync("SendClient");

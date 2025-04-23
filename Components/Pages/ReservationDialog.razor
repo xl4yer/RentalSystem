@@ -117,6 +117,12 @@
 
     private async Task Submit()
     {
+        if (_gowns.Status != "Available")
+        {
+            SnackBar.Add("Gown is not available for reservation!", Severity.Warning);
+            return;
+        }
+
         try
         {
             var reservation = new Reservation
