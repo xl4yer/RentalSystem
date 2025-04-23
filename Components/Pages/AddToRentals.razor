@@ -22,9 +22,9 @@
                     <MudText Typo="Typo.subtitle1">Customer Name: @_reservation.Fullname</MudText>
                     <MudText Typo="Typo.subtitle1">Gown Name: @_reservation.Name</MudText>
                     <MudText Typo="Typo.subtitle1">Color: @_reservation.Color</MudText>
-                    <MudText Typo="Typo.subtitle1">Size: @_reservation.Size</MudText> 
+                    <MudText Typo="Typo.subtitle1">Size: @_reservation.Size</MudText>
                     <MudText Typo="Typo.subtitle1">Remaining Payment</MudText>
-                    <MudNumericField Margin="Margin.Dense" @bind-Value="remainingFee"  Variant="Variant.Outlined" />
+                    <MudNumericField Margin="Margin.Dense" @bind-Value="remainingFee" ReadOnly  Variant="Variant.Outlined" />
                     <MudText Typo="Typo.subtitle1">Due Date</MudText>
                     <MudDatePicker Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="_date" />
                 </MudItem>
@@ -33,7 +33,6 @@
     </DialogContent>
     <DialogActions>
         <MudSpacer/>
-        <MudButton FullWidth Variant="Variant.Filled" @onclick="Cancel" Color="Color.Warning">Cancel</MudButton>
         <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white;">Submit</MudButton>
     </DialogActions>
 </MudDialog>
@@ -45,6 +44,11 @@
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
     private DateTime? _date { get; set; } = DateTime.Now.AddDays(1);
     double remainingFee { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        remainingFee = _reservation.Fee - _reservation.ReservationFee;
+    }
 
     private async Task Submit()
     {

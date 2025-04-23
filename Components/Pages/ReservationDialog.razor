@@ -40,6 +40,8 @@
                         }
                     </MudSelect> 
                     <br />
+                    <MudCard Elevation="1">
+                    <center>
                     <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
                         Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
                     </MudText>
@@ -49,6 +51,8 @@
                     <MudText Typo="Typo.body1" Color="Color.Dark">
                         Maya: <span class="font-mono">0948 192 4095</span>
                     </MudText>
+                    </center>
+                    </MudCard>
                     <br />
                     @if (paymentMethod != "Cash")
                     {
@@ -56,7 +60,7 @@
                         <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
                             <ActivatorContent>
                                 <div class="payment-receipt">
-                                    <img src="@imgsrc" Style="height:200px; width:200px" />
+                                    <img src="@imgsrc" style="width: 250px; border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
                                 </div>
                             </ActivatorContent>
                         </MudFileUpload>
@@ -125,8 +129,7 @@
                     PaymentMethod = paymentMethod,
                     ReservationFee = 500,
                     Receipt = _photo,
-                    Status = "Pending",
-                    RentalFee = _gowns.Fee,
+                    Status = "Pending" 
                 };
             using var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
             var response = await httpClient.PostAsJsonAsync("api/Reservation/AddReservation", reservation);
