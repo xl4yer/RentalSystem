@@ -334,5 +334,59 @@ namespace RentalSystem.Services
             }
             return 0;
         }
+
+        public async Task<int> CountAvailableGowns()
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+                var com = new MySqlCommand("CountAvailableGowns", con)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                return Convert.ToInt32(await com.ExecuteScalarAsync().ConfigureAwait(false));
+            }
+        }
+
+        public async Task<int> CountPendingGowns()
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+                var com = new MySqlCommand("CountPendingGowns", con)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                return Convert.ToInt32(await com.ExecuteScalarAsync().ConfigureAwait(false));
+            }
+        }
+
+        public async Task<int> CountRentedGowns()
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+                var com = new MySqlCommand("CountRentedGowns", con)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                return Convert.ToInt32(await com.ExecuteScalarAsync().ConfigureAwait(false));
+            }
+        }
+
+        public async Task<int> CountReturnedGowns()
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+                var com = new MySqlCommand("CountReturnedGowns", con)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                return Convert.ToInt32(await com.ExecuteScalarAsync().ConfigureAwait(false));
+            }
+        }
+
+
     }
 }

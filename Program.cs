@@ -25,7 +25,6 @@ builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<GownServices>();
 builder.Services.AddTransient<ReservationServices>();
 builder.Services.AddTransient<RentalServices>();
-builder.Services.AddTransient<ReceiptServices>();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddJSPrintManager();

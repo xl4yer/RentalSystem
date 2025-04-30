@@ -74,5 +74,30 @@ namespace RentalSystem.Controllers
             var ret = await srvcs.UpdateGown(gown);
             return ret;
         }
+
+        [HttpGet]
+        public async Task<int> CountAvailableGowns()
+        {
+            return await srvcs.CountAvailableGowns();
+        }
+
+        [HttpGet]
+        public async Task<int> CountRentedGowns()
+        {
+            return await srvcs.CountRentedGowns();
+        }
+
+        [HttpGet]
+        public async Task<int> CountPendingGowns()
+        {
+            return await srvcs.CountPendingGowns();
+        }
+
+        [HttpGet]
+        public async Task<int> CountReturnedGowns()
+        {
+            return await srvcs.CountReturnedGowns();
+        }
+
     }
 }

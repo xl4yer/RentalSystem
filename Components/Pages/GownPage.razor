@@ -1,0 +1,279 @@
+﻿@page "/gowns"
+@rendermode InteractiveServer
+<PageTitle>Admin Dashboard</PageTitle>
+
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+       <LoginButton/>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">V.O.W</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="gowns">Gowns</MudNavLink>
+            <MudNavLink Href="reservations">Reservations</MudNavLink>
+            <MudNavLink Href="rentals">Rentals</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer>
+            <div class="container mt-3">
+                @if (gown == null || gown.Length == 0)
+                {
+                    <div class="d-flex justify-content-center my-4">
+                        <div class="loader"></div>
+                    </div>
+                }
+                else
+                {
+                    <MudGrid Class="mt-3" Justify="Justify.Center">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="1" Style="border-radius:20px;">
+                                <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
+                                    <DataAnnotationsValidator />
+                                    <MudContainer Style="max-height: auto;">
+                                        <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
+                                            <ActivatorContent>
+                                                <img src="@imgsrc" style="width: 250px; border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
+                                            </ActivatorContent>
+                                        </MudFileUpload> <br />
+                                        <MudText Align="Align.Justify">Gown Name</MudText>
+                                        <MudTextField @bind-Value="@_gowns.Name" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                        <MudText Align="Align.Justify">Gown Type</MudText>
+                                        <MudSelect @bind-Value="@_gowns.Type" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                            @foreach (var type in new[] { "Bridal", "Debut", "Filipininia", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
+                                            {
+                                                <MudSelectItem Value="@type" />
+                                            }
+                                        </MudSelect>
+                                        <MudText Align="Align.Justify">Color</MudText>
+                                        <MudSelect @bind-Value="@_gowns.Color" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                            @foreach (var color in new[] { "Black", "Blue", "Brown", "Cream", "Gold", "Gray and Silver", "Green", "Orange", "Pink", "Nude and Skintone", "Red", "Teal", "Violet and Purple", "White", "Yellow" })
+                                            {
+                                                <MudSelectItem Value="@color" />
+                                            }
+                                        </MudSelect>
+                                        <MudText Align="Align.Justify">Size</MudText>
+                                        <MudSelect @bind-Value="@_gowns.Size" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                                            @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
+                                            {
+                                                <MudSelectItem Value="@size" />
+                                            }
+                                        </MudSelect>
+                                        <MudText Align="Align.Justify">Rental Fee</MudText>
+                                        <MudNumericField @bind-Value="@_gowns.Fee" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                    </MudContainer> <br />
+                                    <MudToolBar>
+                                        <MudSpacer />
+                                        <MudButton FullWidth>Clear</MudButton>
+                                        <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Submit</MudButton>
+                                    </MudToolBar>
+                                </EditForm>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="8">
+
+                            <div style="overflow-x: auto;">
+                                <MudTable Dense Hover Items="@gown" FixedHeader FixedFooter Height="600px" Elevation="1" Style="border-radius:20px">
+                                    <ToolBarContent>
+                                        <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="LoadGowns">Refresh</MudButton>
+                                        <MudSpacer />
+                                        <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                                        <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
+                                    </ToolBarContent>
+                                    <HeaderContent>
+                                        @foreach (var header in new[] { "Photo", "Gown Name", "Type","Status", "Action" })
+                                        {
+                                            <MudTh>@header</MudTh>
+                                        }
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd>
+                                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
+                                        </MudTd>
+                                        <MudTd>@context.Name</MudTd>
+                                        <MudTd>@context.Type</MudTd>
+                                        <MudTd>
+                                            <MudChip T="string" Color="@(context.Status == "Available" ? Color.Success : context.Status == "Reserved" ? Color.Tertiary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info : Color.Tertiary)">@context.Status</MudChip>
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudButton Variant="Variant.Filled" @onclick="() => Update(context.Id)" Style="font-size:10px" Color="Color.Secondary">Edit</MudButton>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </div>
+
+                        </MudItem>
+                    </MudGrid>
+                }
+            </div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private Gowns[]? gown;
+    [Parameter] public Gowns _gowns { get; set; } = new();
+    [Parameter] public Image _image { get; set; } = new();
+    bool fixed_header = true, fixed_footer = false;
+    public string imgsrc { get; set; } = "";
+    [Parameter] public byte[] _filebytes { get; set; } = null!;
+    [Parameter] public byte[] _photo { get; set; } = null!;
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+    public Position Position { get; set; } = Position.Left;
+    private string txtsearch { get; set; } = string.Empty;
+
+    private bool _open = true;
+    private Breakpoint _breakpoint = Breakpoint.Lg;
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+
+    public async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(txtsearch))
+        {
+            SnackBar.Add("Please enter a search term.", Severity.Warning);
+            return;
+        }
+       
+        using (HttpClient client = new HttpClient())
+        {
+            client.BaseAddress = new Uri($"{Nav.BaseUri}");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+            await Loc.GetItemAsStringAsync("token"));
+            HttpResponseMessage response = await client.GetAsync($"api/Gown/SearchGown?search={txtsearch}");
+            if (response.IsSuccessStatusCode)
+            {
+                string contentrespose = await response.Content.ReadAsStringAsync();
+                gown = JsonConvert.DeserializeObject<Gowns[]>(contentrespose);
+                StateHasChanged();
+            }
+            else
+            {
+                SnackBar.Add($"Warning: {response.StatusCode}", Severity.Warning);
+            }
+        }
+    }
+
+    public async Task Submit()
+    {
+        try
+        {
+            var gown = new Gowns
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Photo = _photo,
+                    Name = _gowns.Name,
+                    Type = _gowns.Type,
+                    Color = _gowns.Color,
+                    Size = _gowns.Size,
+                    Fee = _gowns.Fee,
+                    Status = "Available"
+                };
+            var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
+                .PostAsJsonAsync("api/Gown/AddGown", gown);
+            var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
+            var isSuccess = response.IsSuccessStatusCode && result > 0;
+            SnackBar.Add(
+                isSuccess ? "Done: Successfully Saved!" : $"Warning: {response.ReasonPhrase}",
+                isSuccess ? Severity.Success : Severity.Warning
+            );
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (_image.img64 != null && _image.img64.Length > 0)
+        {
+            imgsrc = string.Format($"data:image/png;base64,{_image.img64}");
+        }
+    }
+
+    private async void UploadFiles(IBrowserFile file)
+    {
+        files.Add(file);
+        var memoryStream = new MemoryStream();
+        await file.OpenReadStream(file.Size).CopyToAsync(memoryStream);
+        _filebytes = memoryStream.ToArray();
+        _photo = GetImage(Convert.ToBase64String(_filebytes));
+        imgsrc = string.Format("data:image/jpg;base64,{0}", Convert.ToBase64String(_photo));
+        StateHasChanged();
+    }
+
+    private async Task clearImg()
+    {
+        var photos = GetImage(_image.img64);
+
+        imgsrc = string.Format("data:image/jpg;base64,{0}", Convert.ToBase64String(photos));
+        StateHasChanged();
+
+    }
+
+    public byte[] GetImage(string sBase64String)
+    {
+        byte[] bytes = null;
+        if (!string.IsNullOrEmpty(sBase64String))
+        {
+            bytes = Convert.FromBase64String(sBase64String);
+        }
+        return bytes;
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await LoadGowns();
+    }
+
+    private async Task Update(string id)
+    {
+        var parameters = new DialogParameters();
+        var update = gown.FirstOrDefault(_ => _.Id == id);
+        parameters.Add("_gowns", update);
+
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.Small, 
+                FullWidth = true
+            };
+
+        var dialog = await Dialog.Show<UpdateGown>("Update", parameters, options).Result;
+
+    }
+
+    public async Task LoadGowns()
+    {
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync("api/Gown/Gowns");
+            if (!response.IsSuccessStatusCode) return;
+
+            await Task.Delay(1000);
+            gown = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+
+    public void OnValidSubmit(EditContext context)
+    {
+
+    }
+}

@@ -1,8 +1,8 @@
 ﻿
 <style>
     .custom-dialog-title {
-        background-color: #4E3434;
-        color: white;
+    background-color: #4E3434;
+    color: white;
     }
 </style>
 
@@ -41,17 +41,17 @@
                     </MudSelect> 
                     <br />
                     <MudCard Elevation="1">
-                    <center>
-                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
-                        Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
-                    </MudText>
-                    <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
-                        GCash: <span class="font-mono">0948 192 4095</span>
-                    </MudText>
-                    <MudText Typo="Typo.body1" Color="Color.Dark">
-                        Maya: <span class="font-mono">0948 192 4095</span>
-                    </MudText>
-                    </center>
+                        <center>
+                            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
+                                Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
+                            </MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
+                                GCash: <span class="font-mono">0948 192 4095</span>
+                            </MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Dark">
+                                Maya: <span class="font-mono">0948 192 4095</span>
+                            </MudText>
+                        </center>
                     </MudCard>
                     <br />
                     @if (paymentMethod != "Cash")
@@ -72,9 +72,9 @@
                     <MudToolBar>
                         <MudButton Variant="Variant.Filled" FullWidth Style="background-color:#4E3434; color:white" @onclick="Submit">Reserve</MudButton>
                     </MudToolBar>
-                    
+
                 </MudStep>
-             
+
             </MudStepper>
         </MudContainer>
     </DialogContent>
@@ -87,7 +87,7 @@
     [Parameter] public Gowns _gowns { get; set; } = new Gowns();
     [Parameter] public Reservation _reservation { get; set; } = new Reservation();
     [Parameter] public Image _image { get; set; } = new();
-    public string imgsrc { get; set; } = "";
+    public string imgsrc { get; set; } = null;
     private string id;
     [Parameter] public byte[] _filebytes { get; set; } = null!;
     [Parameter] public byte[] _photo { get; set; } = null!;
@@ -122,35 +122,46 @@
             SnackBar.Add("Gown is not available for reservation!", Severity.Warning);
             return;
         }
+        else if (paymentMethod == "GCash" && (_photo == null || _photo.Length == 0))
+        {
+            SnackBar.Add("Please upload a valid receipt.", Severity.Error);
+        }
 
-        try
+
+
+        else
         {
-            var reservation = new Reservation
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    GownId = _gowns.Id,
-                    UserId = id,
-                    Date = DateTime.Now,
-                    PickupDate = _date,
-                    PaymentMethod = paymentMethod,
-                    ReservationFee = 500,
-                    Receipt = _photo,
-                    Status = "Pending" 
-                };
-            using var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
-            var response = await httpClient.PostAsJsonAsync("api/Reservation/AddReservation", reservation);
-            var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
-            bool isSuccess = response.IsSuccessStatusCode && result > 0;
-            SnackBar.Add(
-                isSuccess ? "Successfully reserved!" : $"Failed: {response.ReasonPhrase}",
-                isSuccess ? Severity.Success : Severity.Warning
-            );
-            mudDialog.Close();
+            try
+            {
+                var reservation = new Reservation
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        GownId = _gowns.Id,
+                        UserId = id,
+                        Date = DateTime.Now,
+                        PickupDate = _date,
+                        PaymentMethod = paymentMethod,
+                        ReservationFee = 500,
+                        Receipt = _photo,
+                        Status = "Pending"
+                    };
+                using var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+                var response = await httpClient.PostAsJsonAsync("api/Reservation/AddReservation", reservation);
+                var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
+                bool isSuccess = response.IsSuccessStatusCode && result > 0;
+                SnackBar.Add(
+                    isSuccess ? "Successfully reserved!" : $"Failed: {response.ReasonPhrase}",
+                    isSuccess ? Severity.Success : Severity.Warning
+                );
+                mudDialog.Close();
+            }
+            catch (Exception ex)
+            {
+                SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+            }
         }
-        catch (Exception ex)
-        {
-            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        }
+
+       
     }
 
 
