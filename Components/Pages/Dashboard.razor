@@ -1,5 +1,7 @@
 ﻿@page "/dashboard"
 
+<PageTitle>Dashboard</PageTitle>
+
 <MudLayout>
     <MudAppBar Elevation="1" Style="background-color:#4E3434">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
@@ -56,7 +58,7 @@
                     <MudPaper Class="pa-4 rounded-lg" Elevation="3">
                         <MudGrid>
                             <MudItem>
-                                <MudIcon Color="Color.Primary" Style="font-size:3rem;" Icon="@Icons.Material.Outlined.Approval" />
+                                <MudIcon Color="Color.Primary" Style="font-size:3rem;" Icon="@Icons.Material.Outlined.LocalLibrary" />
                             </MudItem>
                             <MudItem>
                                 <MudText Typo="Typo.h4"><b>@rentedGowns</b></MudText>

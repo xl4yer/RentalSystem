@@ -13,27 +13,24 @@
     </TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px; padding: 20px;">
-            <MudGrid>
-                <MudItem xs="6">
+                    <center>
                     <MudImage Style="height:200px; width:150px" Src="@( $"data:image/bmp;base64,{Convert.ToBase64String(_reservation.Photo)}" )"
                     Class="reservation-image" />
-                </MudItem>
-                <MudItem xs="6">
-                    <MudText Typo="Typo.subtitle1">Customer Name: @_reservation.Fullname</MudText>
-                    <MudText Typo="Typo.subtitle1">Gown Name: @_reservation.Name</MudText>
-                    <MudText Typo="Typo.subtitle1">Color: @_reservation.Color</MudText>
-                    <MudText Typo="Typo.subtitle1">Size: @_reservation.Size</MudText>
-                    <MudText Typo="Typo.subtitle1">Remaining Payment</MudText>
+                    </center>
+            <MudText Typo="Typo.subtitle1" Align="Align.Center">Customer Name: <u>@_reservation.Fullname</u></MudText>
+            <MudText Typo="Typo.subtitle1" Align="Align.Center">Gown Name: <u>@_reservation.Name</u></MudText>
+            <MudText Typo="Typo.subtitle1" Align="Align.Center">Color: <u>@_reservation.Color</u></MudText>
+            <MudText Typo="Typo.subtitle1" Align="Align.Center">Size: <u>@_reservation.Size</u></MudText>
+            <MudText Typo="Typo.subtitle1">Remaining Payment</MudText>
                     <MudNumericField Margin="Margin.Dense" @bind-Value="remainingFee" ReadOnly  Variant="Variant.Outlined" />
-                    <MudText Typo="Typo.subtitle1">Due Date</MudText>
+            <MudText Typo="Typo.subtitle1" >Select Due Date</MudText>
                     <MudDatePicker Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="_date" />
-                </MudItem>
-            </MudGrid>
+            
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudSpacer/>
-        <MudButton  Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white;">Submit</MudButton>
+      
+        <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white;">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 

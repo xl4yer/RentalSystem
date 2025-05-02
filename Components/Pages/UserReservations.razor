@@ -27,7 +27,7 @@
             {
                 <MudTable Class="ma-3" Dense Hover Items="@reservations" FixedHeader FixedFooter Height="600px">
                     <HeaderContent>
-                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Status" })
+                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size","Pickup Date", "Status" })
                         {
                             <MudTh>@header</MudTh>
                         }
@@ -40,6 +40,7 @@
                         <MudTd>@context.Type</MudTd>
                         <MudTd>@context.Color</MudTd>
                         <MudTd>@context.Size</MudTd>
+                        <MudTd>@context.PickupDate?.ToString("d")</MudTd>
                         <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : Color.Tertiary)">@context.Status</MudChip></MudTd>
                     </RowTemplate>
                 </MudTable>

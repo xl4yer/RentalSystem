@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +29,7 @@ builder.Services.AddTransient<RentalServices>();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddJSPrintManager();
+builder.Services.AddSweetAlert2();
 
 builder.Services.AddSignalR();
 
