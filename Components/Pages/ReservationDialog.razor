@@ -42,7 +42,7 @@
                     <br />
                     <MudCard Elevation="1">
                         <center>
-                            <MudText Typo="Typo.h6" Color="Color.Primary" Class="mb-2 font-weight-bold">
+                            <MudText Typo="Typo.h6">
                                 Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
                             </MudText>
                             <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
@@ -92,7 +92,7 @@
     [Parameter] public byte[] _filebytes { get; set; } = null!;
     [Parameter] public byte[] _photo { get; set; } = null!;
     IList<IBrowserFile> files = new List<IBrowserFile>();
-    private DateTime? _date = DateTime.Today;
+    private DateTime? _date = DateTime.Today.AddDays(1);
     private string paymentMethod { get; set; } = "Gcash";
     [CascadingParameter] IMudDialogInstance? mudDialog { get; set; }
 
@@ -122,7 +122,7 @@
             SnackBar.Add("Gown is not available for reservation!", Severity.Warning);
             return;
         }
-        else if (paymentMethod == "GCash" && (_photo == null || _photo.Length == 0))
+        else if (paymentMethod != "Cash" && (_photo == null || _photo.Length == 0))
         {
             SnackBar.Add("Please upload a valid receipt.", Severity.Error);
         }

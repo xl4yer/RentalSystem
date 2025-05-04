@@ -1,95 +1,55 @@
 ﻿@page "/dashboard"
+@rendermode InteractiveServer
 
 <PageTitle>Dashboard</PageTitle>
 
 <MudLayout>
+    <!-- Top App Bar -->
     <MudAppBar Elevation="1" Style="background-color:#4E3434">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
         <MudSpacer />
         <LoginButton />
     </MudAppBar>
+
+    <!-- Side Drawer -->
     <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">V.O.W</MudText>
         </MudDrawerHeader>
         <MudNavMenu>
-            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
-            <MudNavLink Href="gowns">Gowns</MudNavLink>
-            <MudNavLink Href="reservations">Reservations</MudNavLink>
-            <MudNavLink Href="rentals">Rentals</MudNavLink>
+            <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
+            <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
+            <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
+
+    <!-- Main Content -->
     <MudMainContent>
-        <MudContainer>
-         
-                    <MudGrid Class="mb-3">
-                        <MudItem xs="6" sm="6" md="6">
-                            <MudPaper Class="pa-4 rounded-lg" Elevation="3">
-                                <MudGrid>
-                                    <MudItem>
-                                <MudIcon Color="Color.Success" Style="font-size:3rem;" Icon="@Icons.Material.Outlined.EventAvailable" />
-                                    </MudItem>
-                                    <MudItem>
-                                        <MudText Typo="Typo.h4"><b>@availableGowns</b></MudText>
-                                        <MudText Typo="Typo.subtitle1">Available Gowns</MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudPaper>
-                        </MudItem>
-
-                        <MudItem xs="6" sm="6" md="6">
-                            <MudPaper Class="pa-4 rounded-lg" Elevation="3">
-                                <MudGrid>
-                                    <MudItem>
-                                        <MudIcon Color="Color.Warning" Style="font-size:3rem;" Icon="@Icons.Material.Outlined.Pending" />
-                                    </MudItem>
-                                    <MudItem>
-                                        <MudText Typo="Typo.h4"><b></b>@pendingGowns</MudText>
-                                        <MudText Typo="Typo.subtitle1">Pending Gowns</MudText>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudPaper>
-                        </MudItem>
-                    </MudGrid>
-
-                    <br />
-            <MudGrid Class="mb-3">
-                <MudItem xs="6" sm="6" md="6">
-                    <MudPaper Class="pa-4 rounded-lg" Elevation="3">
-                        <MudGrid>
-                            <MudItem>
-                                <MudIcon Color="Color.Primary" Style="font-size:3rem;" Icon="@Icons.Material.Outlined.LocalLibrary" />
-                            </MudItem>
-                            <MudItem>
-                                <MudText Typo="Typo.h4"><b>@rentedGowns</b></MudText>
-                                <MudText Typo="Typo.subtitle1">Rented Gowns</MudText>
-                            </MudItem>
-                        </MudGrid>
-                    </MudPaper>
-                </MudItem>
-
-                <MudItem xs="6" sm="6" md="6">
-                    <MudPaper Class="pa-4 rounded-lg" Elevation="3">
-                        <MudGrid>
-                            <MudItem>
-                                <MudIcon Color="Color.Tertiary" Style="font-size:3rem;" Icon="@Icons.Material.Outlined.AssignmentReturn" />
-                            </MudItem>
-                            <MudItem>
-                                <MudText Typo="Typo.h4"><b></b>@returnedGowns</MudText>
-                                <MudText Typo="Typo.subtitle1">Returned Gowns</MudText>
-                            </MudItem>
-                        </MudGrid>
-                    </MudPaper>
-                </MudItem>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-5">
+            <MudGrid GutterSize="24px">
+                @foreach (var card in DashboardCards)
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudPaper Elevation="6" Class="pa-5 rounded-xl hover:scale-105 transition-all duration-300" Style="background:linear-gradient(to right, #f7e1d7, #e8cbc0);">
+                            <MudGrid AlignItems="Center">
+                                <MudItem xs="4">
+                                    <MudIcon Icon="@card.Icon" Color="@card.Color" Style="font-size:3.5rem;" />
+                                </MudItem>
+                                <MudItem xs="8">
+                                    <MudText Typo="Typo.h5" Class="font-bold">@card.Value</MudText>
+                                    <MudText Typo="Typo.subtitle2">@card.Label</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                }
             </MudGrid>
-
-
-               
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
-@code{
+@code {
     private bool _open = true;
     private Breakpoint _breakpoint = Breakpoint.Lg;
     private int availableGowns;
@@ -97,10 +57,8 @@
     private int rentedGowns;
     private int returnedGowns;
 
-    private void ToggleDrawer()
-    {
-        _open = !_open;
-    }
+    private void ToggleDrawer() => _open = !_open;
+
     protected override async Task OnInitializedAsync()
     {
         await CountAvailableGowns();
@@ -126,6 +84,19 @@
     public Task CountRentedGowns() => CountGowns("CountRentedGowns", val => rentedGowns = val);
     public Task CountReturnedGowns() => CountGowns("CountReturnedGowns", val => returnedGowns = val);
 
+    public class DashboardCard
+    {
+        public string Icon { get; set; }
+        public Color Color { get; set; }
+        public string Value { get; set; }
+        public string Label { get; set; }
+    }
 
-
+    private List<DashboardCard> DashboardCards => new()
+    {
+        new() { Icon = Icons.Material.Outlined.EventAvailable, Color = Color.Success, Value = availableGowns.ToString(), Label = "Available Gowns" },
+        new() { Icon = Icons.Material.Outlined.Pending, Color = Color.Warning, Value = pendingGowns.ToString(), Label = "Pending Gowns" },
+        new() { Icon = Icons.Material.Outlined.ShoppingCart, Color = Color.Primary, Value = rentedGowns.ToString(), Label = "Rented Gowns" },
+        new() { Icon = Icons.Material.Outlined.AssignmentReturn, Color = Color.Tertiary, Value = returnedGowns.ToString(), Label = "Returned Gowns" },
+    };
 }

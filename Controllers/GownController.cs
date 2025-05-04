@@ -27,6 +27,13 @@ namespace RentalSystem.Controllers
         }
 
         [HttpGet]
+        public async Task<List<Gowns>> PendingGowns()
+        {
+            var ret = await srvcs.PendingGowns();
+            return ret;
+        }
+
+        [HttpGet]
         public async Task<List<Gowns>> GetGownsByType(string type)
         {
             var ret = await srvcs.GetGownsByType(type);

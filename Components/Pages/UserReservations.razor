@@ -27,21 +27,24 @@
             {
                 <MudTable Class="ma-3" Dense Hover Items="@reservations" FixedHeader FixedFooter Height="600px">
                     <HeaderContent>
-                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size","Pickup Date", "Status" })
+                        @foreach (var header in new[] {"Date", "Photo", "Gown Name", "Type", "Color", "Size","Pickup Date", "Status" })
                         {
                             <MudTh>@header</MudTh>
                         }
                     </HeaderContent>
+
+
                     <RowTemplate>
+                        <MudTd DataLabel="Date">@context.Date?.ToString("d")</MudTd>
                         <MudTd>
                             <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)" class="img-thumbnail rounded" style="max-width: 70px;" />
                         </MudTd>
-                        <MudTd>@context.Name</MudTd>
-                        <MudTd>@context.Type</MudTd>
-                        <MudTd>@context.Color</MudTd>
-                        <MudTd>@context.Size</MudTd>
-                        <MudTd>@context.PickupDate?.ToString("d")</MudTd>
-                        <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : Color.Tertiary)">@context.Status</MudChip></MudTd>
+                        <MudTd DataLabel="Name">@context.Name</MudTd>
+                        <MudTd DataLabel="Type">@context.Type</MudTd>
+                        <MudTd DataLabel="Color">@context.Color</MudTd>
+                        <MudTd DataLabel="Size">@context.Size</MudTd>
+                        <MudTd DataLabel="Pick-up Date">@context.PickupDate?.ToString("d")</MudTd>
+                        <MudTd DataLabel="Status"> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : Color.Tertiary)">@context.Status</MudChip></MudTd>
                     </RowTemplate>
                 </MudTable>
             }

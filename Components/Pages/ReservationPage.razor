@@ -14,10 +14,10 @@
             <MudText Typo="Typo.h6">V.O.W</MudText>
         </MudDrawerHeader>
         <MudNavMenu>
-            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
-            <MudNavLink Href="gowns">Gowns</MudNavLink>
-            <MudNavLink Href="reservations">Reservations</MudNavLink>
-            <MudNavLink Href="rentals">Rentals</MudNavLink>
+            <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
+            <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
+            <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -42,7 +42,7 @@
                         <ToolBarContent>
                             <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadReservations">Refresh</MudButton>
                             <MudSpacer />
-                            <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search Gowns..." Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                            <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search customer's name" Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
                             <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
                         </ToolBarContent>
                         <HeaderContent>
@@ -61,7 +61,7 @@
                             <MudTd>@context.Size</MudTd>
                             <MudTd>@context.Color</MudTd>
                             <MudTd>@context.PickupDate?.ToString("d")</MudTd>
-                            <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info :  Color.Tertiary)">@context.Status</MudChip></MudTd>
+                            <MudTd> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info :  Color.Primary)">@context.Status</MudChip></MudTd>
                             @if (context.Status == "Approved")
                             {
                                 <MudTd>
@@ -98,6 +98,23 @@
     private bool _open = true;
     private Breakpoint _breakpoint = Breakpoint.Lg;
     private string txtsearch = string.Empty;
+
+      protected HubConnection hubConnection;
+
+    protected async override Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/hub"))
+            .Build();
+
+        hubConnection.On("client", async () =>
+        {
+            await LoadReservations();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
     public async Task Search()
     {
         if (string.IsNullOrWhiteSpace(txtsearch))
@@ -160,6 +177,11 @@
 
     public async Task LoadReservations()
     {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendClient");
+        }
+
         try
         {
             using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };

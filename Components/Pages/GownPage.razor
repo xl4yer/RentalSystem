@@ -13,10 +13,10 @@
             <MudText Typo="Typo.h6">V.O.W</MudText>
         </MudDrawerHeader>
         <MudNavMenu>
-            <MudNavLink Href="dashboard">Dashboard</MudNavLink>
-            <MudNavLink Href="gowns">Gowns</MudNavLink>
-            <MudNavLink Href="reservations">Reservations</MudNavLink>
-            <MudNavLink Href="rentals">Rentals</MudNavLink>
+            <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
+            <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
+            <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -98,7 +98,7 @@
                                         <MudTd>@context.Name</MudTd>
                                         <MudTd>@context.Type</MudTd>
                                         <MudTd>
-                                            <MudChip T="string" Color="@(context.Status == "Available" ? Color.Success : context.Status == "Reserved" ? Color.Tertiary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info : Color.Tertiary)">@context.Status</MudChip>
+                                            <MudChip T="string" Color="@(context.Status == "Available" ? Color.Success : context.Status == "Reserved" ? Color.Tertiary : context.Status == "Pending" ? Color.Warning : context.Status == "Rented" ? Color.Info : Color.Primary)">@context.Status</MudChip>
                                         </MudTd>
                                         <MudTd>
                                             <MudButton Variant="Variant.Filled" @onclick="() => Update(context.Id)" Style="font-size:10px" Color="Color.Secondary">Edit</MudButton>

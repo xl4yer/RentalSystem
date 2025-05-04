@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using RentalSystem.Models;
 using RentalSystem.Services;
 
@@ -10,10 +11,12 @@ namespace RentalSystem.Controllers
     public class ReservationController : Controller
     {
         ReservationServices srvcs;
+        IHubContext<Hub> _hub;
 
-        public ReservationController(ReservationServices srvcs)
+        public ReservationController(ReservationServices srvcs, IHubContext<Hub> hubContext)
         {
             this.srvcs = srvcs;
+            _hub = hubContext;
         }
 
         [HttpGet]
