@@ -35,7 +35,7 @@
                 else if (reservation.Length == 0)
                 {
                     <MudTable Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
-                              HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                    HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                         <ToolBarContent>
                             <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadReservations">Refresh</MudButton>
                             <MudSpacer />
@@ -49,7 +49,7 @@
                             }
                         </HeaderContent>
                         <RowTemplate>
-                          
+
                         </RowTemplate>
                     </MudTable>
                 }
@@ -58,7 +58,7 @@
                     <MudTable Dense Hover Items="@reservation" Elevation="1" Style="border-radius:20px"
                     HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                         <ToolBarContent>
-                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadReservations">Refresh</MudButton>
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="Refresh">Refresh</MudButton>
                             <MudSpacer />
                             <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search customer's name" Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
                             <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
@@ -117,24 +117,34 @@
     private Breakpoint _breakpoint = Breakpoint.Lg;
     private string txtsearch = string.Empty;
 
-      protected HubConnection hubConnection;
+    protected HubConnection hubConnection;
 
-    protected async override Task OnInitializedAsync()
+    // protected async override Task OnInitializedAsync()
+    // {
+    //     hubConnection = new HubConnectionBuilder()
+    //         .WithUrl(Nav.ToAbsoluteUri("/hub"))
+    //         .Build();
+
+    //     hubConnection.On("client", async () =>
+    //     {
+    //         await LoadReservations();
+    //     });
+
+    //     await hubConnection.StartAsync();
+    // }
+
+    private async Task Refresh()
     {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(Nav.ToAbsoluteUri("/hub"))
-            .Build();
-
-        hubConnection.On("client", async () =>
-        {
-            await LoadReservations();
-        });
-
-        await hubConnection.StartAsync();
+        await LoadReservations();
     }
 
     public async Task Search()
     {
+        if (hubConnection.State == HubConnectionState.Connected)
+        {
+            await hubConnection.StopAsync();
+        }
+
         if (string.IsNullOrWhiteSpace(txtsearch))
         {
             SnackBar.Add("Please enter a search term.", Severity.Warning);
@@ -195,10 +205,10 @@
 
     public async Task LoadReservations()
     {
-        if (hubConnection is not null)
-        {
-            await hubConnection.SendAsync("SendClient");
-        }
+        // if (hubConnection is not null)
+        // {
+        //     await hubConnection.SendAsync("SendClient");
+        // }
 
         try
         {

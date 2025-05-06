@@ -117,36 +117,35 @@
     private string txtsearch = string.Empty;
     protected HubConnection hubConnection;
 
-    protected async override Task OnInitializedAsync()
-    {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(Nav.ToAbsoluteUri("/hub"))
-            .Build();
+    // protected async override Task OnInitializedAsync()
+    // {
+    //     hubConnection = new HubConnectionBuilder()
+    //         .WithUrl(Nav.ToAbsoluteUri("/hub"))
+    //         .Build();
 
-        hubConnection.On("client", async () =>
-        {
-            await LoadRentals();
-        });
+    //     hubConnection.On("client", async () =>
+    //     {
+    //         await LoadRentals();
+    //     });
 
-        await hubConnection.StartAsync();
-    }
+    //     await hubConnection.StartAsync();
+    // }
 
     private async Task Refresh()
     {
-       
+      
         await LoadRentals();
     }
 
+
     public async Task Search()
     {
-
         if (string.IsNullOrWhiteSpace(txtsearch))
         {
             SnackBar.Add("Please enter a search term.", Severity.Warning);
             return;
         }
 
-       
         try
         {
             using (HttpClient client = new HttpClient())
@@ -174,6 +173,7 @@
         {
             SnackBar.Add($"Error: {ex.Message}", Severity.Error);
         }
+       
     }
 
 

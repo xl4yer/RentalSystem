@@ -34,7 +34,7 @@
                 <MudStep Title="Payment">
                     <MudText Align="Align.Center">Payment Method</MudText>
                     <MudSelect @bind-Value="@paymentMethod" Placeholder="Gcash" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                        @foreach (var payment in new[] { "Cash", "Gcash", "Paymaya" })
+                        @foreach (var payment in new[] { "Cash", "Gcash", "Maya" })
                         {
                             <MudSelectItem Value="@payment" />
                         }
@@ -46,10 +46,10 @@
                                 Please Pay <span style="color: #4E3434;">₱500</span> for Reservation Fee
                             </MudText>
                             <MudText Typo="Typo.body1" Color="Color.Dark" Class="mb-1">
-                                GCash: <span class="font-mono">0948 192 4095</span>
+                                GCash: <span class="font-mono">0976 643 4723</span>
                             </MudText>
                             <MudText Typo="Typo.body1" Color="Color.Dark">
-                                Maya: <span class="font-mono">0948 192 4095</span>
+                                Maya: <span class="font-mono">0976 643 4723</span>
                             </MudText>
                         </center>
                     </MudCard>

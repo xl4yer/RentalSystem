@@ -85,6 +85,19 @@
             <MudButton Variant="Variant.Text" @onclick="SizeChart">Size Chart</MudButton>
         </MudToolBar>
         <MudText Typo="Typo.h6" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
+        <center>
+            <MudElement HtmlTag="a"
+                        Class="ms-2"
+                        Style="color: red; font-weight: bold; text-decoration: underline;"
+                        Href="https://maps.app.goo.gl/izHGhJJgT8H4DFy76?g_st=a"
+                        Target="_blank"
+                        Rel="noopener noreferrer">
+                View Our Location - Google Map
+            </MudElement>
+        </center>
+        <br /><br />
+
+        <MudText Align="Align.Center" Typo="Typo.h5">No results found. Please refresh the page.</MudText>
     }
     else
     {
@@ -130,10 +143,19 @@
             <MudButton Variant="Variant.Text" @onclick="SizeChart">Size Chart</MudButton>
         </MudToolBar>
         <MudText Typo="Typo.h6" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
-        
-
+        <center>
+        <MudElement HtmlTag="a"
+                    Class="ms-2"
+                    Style="color: red; font-weight: bold; text-decoration: underline;"
+                    Href="https://maps.app.goo.gl/izHGhJJgT8H4DFy76?g_st=a"
+                    Target="_blank"
+                    Rel="noopener noreferrer">
+            View Our Location - Google Map
+        </MudElement>
+        </center>
         <br />
-
+        <br />
+      
         <div class="row row-cols-1 row-cols-md-6 g-4">
 
             @foreach (var gown in gowns.Take(currentIndex))
