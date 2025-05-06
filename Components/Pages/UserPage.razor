@@ -20,7 +20,7 @@
             <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
             <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
             <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
-            <MudNavLink Href="users" Icon="@Icons.Material.Filled.VerifiedUser">Users</MudNavLink>
+            <MudNavLink Href="users" Icon="@Icons.Material.Filled.People">Customers</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -41,9 +41,12 @@
                 else
                 {
                     <MudTable Dense Hover Items="@user" Elevation="1" Style="border-radius:20px"
-                              HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                    HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                         <ToolBarContent>
                             <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadUsers">Refresh</MudButton>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search customers" Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
                         </ToolBarContent>
 
                         <HeaderContent>
@@ -53,10 +56,10 @@
                             }
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd DataLabel="Name">@($"{context.Fname} {context.Mname} {context.Lname} {context.Ext}")</MudTd>
-                            <MudTd DataLabel="Gown Name">@context.Address</MudTd>
-                            <MudTd DataLabel="Due Date">@context.Contact</MudTd>
-                            <MudTd DataLabel="Due Date">@context.Email</MudTd>
+                            <MudTd DataLabel="Full Name">@context.Fullname</MudTd>
+                            <MudTd DataLabel="Address">@context.Address</MudTd>
+                            <MudTd DataLabel="Contact">@context.Contact</MudTd>
+                            <MudTd DataLabel="Email">@context.Email</MudTd>
                         </RowTemplate>
                     </MudTable>
                 }
@@ -71,16 +74,55 @@
     private bool _open = true;
     private Breakpoint _breakpoint = Breakpoint.Lg;
     private Users[]? user;
+    private string txtsearch { get; set; } = string.Empty;
+
 
     private void ToggleDrawer()
     {
         _open = !_open;
     }
-  
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
             await LoadUsers();
+    }
+
+    private async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(txtsearch))
+        {
+            SnackBar.Add("Please enter a search term.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Nav.BaseUri);
+                var token = await Loc.GetItemAsStringAsync("token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                string searchQuery = Uri.EscapeDataString(txtsearch);
+                HttpResponseMessage response = await client.GetAsync($"api/User/SearchUsers?search={txtsearch}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string contentResponse = await response.Content.ReadAsStringAsync();
+                    user = JsonConvert.DeserializeObject<Users[]>(contentResponse);
+                    StateHasChanged();
+                }
+                else
+                {
+                    SnackBar.Add($"Warning: {response.StatusCode}", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
     private async Task LoadUsers()
     {

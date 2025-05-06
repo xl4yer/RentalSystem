@@ -76,6 +76,52 @@ namespace Pos.Services
             }
         }
 
+        public async Task<List<Users>> SearchUsers(string search)
+        {
+            List<Users> users = new List<Users>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("SearchUsers", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    com.Parameters.AddWithValue("search", search);
+                    com.Parameters.AddWithValue("searchWildcard", $"{search}%");
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        users.Add(new Users
+                        {
+                            Id = rdr["Id"].ToString(),
+                            Fname = rdr["Fname"].ToString(),
+                            Fullname = rdr["Fullname"].ToString(),
+                            Mname = rdr["Mname"].ToString(),
+                            Lname = rdr["Lname"].ToString(),
+                            Ext = rdr["Ext"].ToString(),
+                            Address = rdr["Address"].ToString(),
+                            Contact = rdr["Contact"].ToString(),
+                            Role = rdr["Role"].ToString(),
+                            UserName = rdr["UserName"].ToString(),
+                            Email = rdr["Email"].ToString(),
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return users;
+        }
+
         public async Task<int> Register(Users user)
         {
             using (var con = new MySqlConnection(_constring.GetConnection()))
@@ -95,6 +141,7 @@ namespace Pos.Services
                     }
 
                     com.Parameters.AddWithValue("_Id", user.Id);
+                    com.Parameters.AddWithValue("_Fname", user.Fname);
                     com.Parameters.AddWithValue("_Fname", user.Fname);
                     com.Parameters.AddWithValue("_Mname", user.Mname);
                     com.Parameters.AddWithValue("_Lname", user.Lname);
@@ -137,6 +184,7 @@ namespace Pos.Services
                         user.Add(new Users
                         {
                             Id = rdr["Id"].ToString(),
+                            Fullname = rdr["Fullname"].ToString(),
                             Fname = rdr["Fname"].ToString(),
                             Mname = rdr["Mname"].ToString(),
                             Lname = rdr["Lname"].ToString(),

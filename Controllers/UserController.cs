@@ -31,6 +31,13 @@ namespace RentalSystem.Controllers
             return ret;
         }
 
+        [HttpGet]
+        public async Task<List<Users>> SearchUsers(string search)
+        {
+            var ret = await srvcs.SearchUsers(search);
+            return ret;
+        }
+
         [HttpPost]
         public async Task<int> Register([FromBody] Users user)
         {
