@@ -21,6 +21,18 @@ namespace RentalSystem.Controllers
         }
 
         [HttpGet]
+        public async Task<double> DailyIncome()
+        {
+            return await srvcs.DailyIncome();
+        }
+
+        [HttpGet]
+        public async Task<double> MonthlyIncome()
+        {
+            return await srvcs.MonthlyIncome();
+        }
+
+        [HttpGet]
         public async Task<List<Rentals>> Rentals()
         {
             var ret = await srvcs.Rentals();

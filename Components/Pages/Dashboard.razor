@@ -13,11 +13,8 @@
 
     <!-- Side Drawer -->
     <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
-        <MudDrawerHeader>
-            <MudAvatar style="width:120px; height:120px">
-                <MudImage  Src="logo1.png"></MudImage>
-            </MudAvatar>
-        </MudDrawerHeader>
+        <MudImage Src="logo1.png" Style="height:200px; width:200px; margin-top:0; display:block; margin-left:auto; margin-right:auto; border-radius:10px;" />
+        <br />
         <MudNavMenu>
             <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
             <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
@@ -30,6 +27,30 @@
     <!-- Main Content -->
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-5">
+
+            <div class="row g-3">
+                <!-- g-3 adds gutter spacing -->
+                <div class="col-12 col-md-6">
+                    <MudCard Class="dashboard-card h-100" Style="background:linear-gradient(to right, #f7e1d7, #e8cbc0); border-radius:20px;">
+                        <MudCardContent>
+                            <MudText Align="Align.Center" Class="dashboard-title" Size="5">Daily Income</MudText>
+                            <MudText Align="Align.Center" Style="font-size:30px; font-weight:bold">₱@dailyIncome</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <MudCard Class="dashboard-card h-100" Style="background:linear-gradient(to right, #f7e1d7, #e8cbc0); border-radius:20px;">
+                        <MudCardContent>
+                            <MudText Align="Align.Center" Class="dashboard-title" Size="5">Monthly Income</MudText>
+                            <MudText Align="Align.Center" Style="font-size:30px; font-weight:bold">₱@monthlyIncome</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </div>
+            </div>
+
+
+    <br />
             <MudGrid GutterSize="24px">
                 @foreach (var card in DashboardCards)
                 {
@@ -48,6 +69,8 @@
                     </MudItem>
                 }
             </MudGrid>
+            <br />
+
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -59,11 +82,45 @@
     private int pendingGowns;
     private int rentedGowns;
     private int returnedGowns;
+    private double dailyIncome;
+    private double monthlyIncome;
 
     private void ToggleDrawer() => _open = !_open;
 
+    public async Task DailyIncome()
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            client.BaseAddress = new Uri($"{Nav.BaseUri}");
+            HttpResponseMessage response = await client.GetAsync($"api/Rental/DailyIncome");
+            if (response.IsSuccessStatusCode)
+            {
+                string contentResponse = await response.Content.ReadAsStringAsync();
+                dailyIncome = JsonConvert.DeserializeObject<double>(contentResponse);
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async Task MonthlyIncome()
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            client.BaseAddress = new Uri($"{Nav.BaseUri}");
+            HttpResponseMessage response = await client.GetAsync($"api/Rental/MonthlyIncome");
+            if (response.IsSuccessStatusCode)
+            {
+                string contentResponse = await response.Content.ReadAsStringAsync();
+                monthlyIncome = JsonConvert.DeserializeObject<double>(contentResponse);
+                StateHasChanged();
+            }
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        await MonthlyIncome();
+        await DailyIncome();
         await CountAvailableGowns();
         await CountPendingGowns();
         await CountRentedGowns();

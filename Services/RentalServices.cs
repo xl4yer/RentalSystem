@@ -19,6 +19,32 @@ namespace RentalSystem.Services
             _appSetting = appSettings.Value;
         }
 
+        public async Task<double> DailyIncome()
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+                var com = new MySqlCommand("DailyIncome", con)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                return Convert.ToInt32(await com.ExecuteScalarAsync().ConfigureAwait(false));
+            }
+        }
+
+        public async Task<double> MonthlyIncome()
+        {
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                await con.OpenAsync().ConfigureAwait(false);
+                var com = new MySqlCommand("MonthlyIncome", con)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                return Convert.ToInt32(await com.ExecuteScalarAsync().ConfigureAwait(false));
+            }
+        }
+
         public async Task<List<Rentals>> Rentals()
         {
             List<Rentals> rentals = new List<Rentals>();

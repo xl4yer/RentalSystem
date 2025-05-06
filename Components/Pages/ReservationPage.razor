@@ -10,11 +10,8 @@
         <LoginButton />
     </MudAppBar>
     <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
-        <MudDrawerHeader>
-            <MudAvatar style="width:120px; height:120px">
-                <MudImage Src="logo1.png"></MudImage>
-            </MudAvatar>
-        </MudDrawerHeader>
+        <MudImage Src="logo1.png" Style="height:200px; width:200px; margin-top:0; display:block; margin-left:auto; margin-right:auto; border-radius:10px;" />
+        <br />
         <MudNavMenu>
             <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
             <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
