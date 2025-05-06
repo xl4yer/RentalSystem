@@ -142,7 +142,6 @@ namespace Pos.Services
 
                     com.Parameters.AddWithValue("_Id", user.Id);
                     com.Parameters.AddWithValue("_Fname", user.Fname);
-                    com.Parameters.AddWithValue("_Fname", user.Fname);
                     com.Parameters.AddWithValue("_Mname", user.Mname);
                     com.Parameters.AddWithValue("_Lname", user.Lname);
                     com.Parameters.AddWithValue("_Ext", user.Ext);
