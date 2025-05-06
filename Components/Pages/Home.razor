@@ -1,17 +1,185 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@layout NewLayout
 
-<NewNavMenu />
-<div style="
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;">
-    <h1>HELLO WORLD!</h1>
+<PageTitle>Home</PageTitle>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>VERGO ONLINE WEAR RESERVATION</title>
+	<link rel="stylesheet" type="text/css" href="./style.css" />
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css'>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+
+	<main>
+		<div>
+			<MudDrawerHeader>
+				<MudAvatar style="width:120px; height:120px">
+					<MudImage Src="logo1.png"></MudImage>
+				</MudAvatar>
+			</MudDrawerHeader>
+		
+			<h2 style="font-size:30px; color:#4E3434">VERGO ONLINE WEAR </h2>
+		
+			<p>
+				Welcome to VERGO ONLINE WEAR!
+
+				We offer elegant rental gowns for weddings, debuts, and special events—luxury without the high cost. <br />
+				Browse our collection, rent with ease, and shine effortlessly! ✨
+			</p>
+			<a href="" @onclick="RentNow" style="background-color:#4E3434; color:white">Login / Register</a>
+		</div>
+		<div class="swiper">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide swiper-slide--one">
+					<div>
+
+
+					</div>
+				</div>
+
+				<div class="swiper-slide swiper-slide--two">
+					<div>
+
+
+					</div>
+				</div>
+
+				<div class="swiper-slide swiper-slide--three">
+
+					<div>
+
+					</div>
+				</div>
+
+				<div class="swiper-slide swiper-slide--four">
+
+					<div>
+
+					</div>
+				</div>
+
+				<div class="swiper-slide swiper-slide--five">
+
+					<div>
+
+					</div>
+				</div>
+			</div>
+			<div class="swiper-pagination"></div>
+		</div>
+		<img src="https://cdn.pixabay.com/photo/2021/11/04/19/39/jellyfish-6769173_960_720.png" alt="" class="bg">
+		<img src="https://cdn.pixabay.com/photo/2012/04/13/13/57/scallop-32506_960_720.png" alt="" class="bg2">
+	</main>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js'></script>
+	@* <center>
+		<MudText Align="Align.Center" Typo="Typo.h5" Style="color:#4E3434;font-family:'Segoe Script';">Available Gowns</MudText>
+	</center>
+
+	<AvailableGowns2 /> *@
+
+	<script>
+		var swiper = new Swiper(".swiper", {
+		effect: "coverflow",
+		grabCursor: true,
+		centeredSlides: true,
+		coverflowEffect: {
+		rotate: 0,
+		stretch: 0,
+		depth: 100,
+		modifier: 3,
+		slideShadows: true
+		},
+		loop: true,
+		pagination: {
+		el: ".swiper-pagination",
+		clickable: true
+		},
+		breakpoints: {
+		640: {
+		slidesPerView: 2
+		},
+		768: {
+		slidesPerView: 1
+		},
+		1024: {
+		slidesPerView: 2
+		},
+		1560: {
+		slidesPerView: 3
+		}
+		}
+		});
+	</script>
+</body>
+</html>
+
+<div class="d-flex">
 </div>
 
+<MudDialog @bind-Visible="_visible" Options="_dialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 @code {
-   
+	private bool _visible;
+	private bool _hide = true;
+	private int _rating;
+	private readonly DialogOptions _dialogOptions = new() { FullWidth = true };
+	private void OpenDialog() => _visible = true;
+	private void Submit() => _visible = false;
+	private string token;
+	private string role;
+
+	private Task RentNow()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		return Dialog.ShowAsync<Login>("Login", options);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			token = await Loc.GetItemAsStringAsync("token");
+			role = await Loc.GetItemAsStringAsync("role");
+			StateHasChanged();
+
+			if (token != null)
+			{
+				if (role == "User")
+				{
+					Nav.NavigateTo("/userdashboard");
+				}
+				else if (role == "Administrator")
+				{
+					Nav.NavigateTo("/dashboard");
+				}
+				else
+				{
+					Nav.NavigateTo("/");
+				}
+			}
+			else
+			{
+				Nav.NavigateTo("/");
+			}
+		}
+	}
+
 }

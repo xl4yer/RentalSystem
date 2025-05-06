@@ -1,327 +1,105 @@
 ﻿@page "/dashboard"
 @rendermode InteractiveServer
-<PageTitle>Rental Gowns</PageTitle>
 
-<NewNavMenu/>
+<PageTitle>Dashboard</PageTitle>
 
-<div class="container mt-5">
-    @if (gown == null || gown.Length == 0)
-    {
-        <div class="d-flex justify-content-center my-4">
-            <div class="loader"></div>
-        </div>
-    }
-    else
-    {
+<MudLayout>
+    <!-- Top App Bar -->
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        <LoginButton />
+    </MudAppBar>
 
-        <MudGrid Class="mt-3" Justify="Justify.Center">
-            <MudItem xs="12" sm="4">
-                <EditForm Model="@_gowns" OnValidSubmit="OnValidSubmit">
-                    <DataAnnotationsValidator />
-                    <MudContainer Style="max-height: 600px;">
-                        <MudFileUpload Class="photo" T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png,.jpg,.jpeg">
-                            <ActivatorContent>
-                                <img src="@imgsrc" width="200" height="200" style="border: 1px solid gray; margin-top: 10px; border-radius: 5px;" />
-                            </ActivatorContent>
-                        </MudFileUpload>
+    <!-- Side Drawer -->
+    <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudAvatar style="width:120px; height:120px">
+                <MudImage  Src="logo1.png"></MudImage>
+            </MudAvatar>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
+            <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
+            <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
+            <MudNavLink Href="customers" Icon="@Icons.Material.Filled.People">Customers</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
 
-                        <MudText Align="Align.Left">Gown Name</MudText>
-                        <MudTextField @bind-Value="@_gowns.Name" Variant="Variant.Outlined" Margin="Margin.Dense" />
-
-                        <MudText Align="Align.Left">Gown Type</MudText>
-                        <MudSelect @bind-Value="@_gowns.Type" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var type in new[] { "Bridal", "Debut", "Filipininia", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
-                            {
-                                <MudSelectItem Value="@type" />
-                            }
-                        </MudSelect>
-
-                        <MudText Align="Align.Left">Gown Color</MudText>
-                        <MudSelect @bind-Value="@_gowns.Color" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var color in new[] { "Black", "Blue", "Brown", "Cream", "Gold", "Gray and Silver", "Green", "Orange", "Pink", "Nude and Skintone", "Red", "Teal", "Violet and Purple", "White", "Yellow" })
-                            {
-                                <MudSelectItem Value="@color" />
-                            }
-                        </MudSelect>
-
-                        <MudText Align="Align.Left">Gown Size</MudText>
-                        <MudSelect @bind-Value="@_gowns.Size" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
-                            @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
-                            {
-                                <MudSelectItem Value="@size" />
-                            }
-                        </MudSelect>
-
-                        <MudText Align="Align.Left">Rental Fee</MudText>
-                        <MudNumericField @bind-Value="@_gowns.Fee" Variant="Variant.Outlined" Margin="Margin.Dense" />
-
-                    </MudContainer>
-
-                    <MudToolBar>
-                        <MudSpacer />
-                        <MudButton FullWidth>Clear</MudButton>
-                        <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Submit</MudButton>
-                    </MudToolBar>
-                </EditForm>
-            </MudItem>
-            <MudItem xs="12" sm="8">
-                <MudToolBar Class="top-row px-3">
-                    <MudSpacer />
-                    <MudTextField T="string"
-                    Adornment="Adornment.End"
-                    AdornmentIcon="@Icons.Material.Filled.Search"
-                    AdornmentColor="Color.Dark"
-                    Placeholder="Search Gowns..."
-                    Variant="Variant.Outlined"
-                    Margin="Margin.Dense" />
-                </MudToolBar>
-
-                <MudTable Class="ma-3" Dense Hover Items="@gown"
-                HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-                    <HeaderContent>
-                        @foreach (var header in new[] { "Photo", "Gown Name", "Type", "Color", "Size", "Rental Fee", "Status", "Action" })
-                        {
-                            <MudTh>@header</MudTh>
-                        }
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
-                            class="img-thumbnail rounded"
-                            style="max-width: 100px;" />
-                        </MudTd>
-                        <MudTd>@context.Name</MudTd>
-                        <MudTd>@context.Type</MudTd>
-                        <MudTd>@context.Color</MudTd>
-                        <MudTd>@context.Size</MudTd>
-                        <MudTd>@context.Fee</MudTd>
-                        <MudTd>
-                            @if (context.Status == "Available")
-                            {
-                                <MudChip T="string" Color="Color.Success">@context.Status</MudChip>
-                            }
-                            else if (context.Status == "Reserved")
-                            {
-                                <MudChip T="string" Color="Color.Warning">@context.Status</MudChip>
-                            }
-                            else
-                            {
-                                <MudChip T="string" Color="Color.Info">@context.Status</MudChip>
-                            }
-                        </MudTd>
-                        <MudTd>
-                            <MudFab Style="background-color:#4E3434; color:white"
-                            @onclick="() => Update(context.Id)"
-                            StartIcon="@Icons.Material.Filled.Edit"
-                            Size="Size.Small" />
-                        </MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudItem>
-        </MudGrid>
-
-        <br/>
-
-        <MudTabs Centered Color="Color.Inherit">
-            <MudTabPanel Text="Reservations">
-                <MudTable Class="ma-3" Dense Hover Items="@reservation"
-                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-                    <HeaderContent>
-                        @foreach (var header in new[] { "Customer Name","Photo",  "Gown Name", "Color", "Size"})
-                        {
-                            <MudTh>@header</MudTh>
-                        }
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>@context.Fullname</MudTd>
-                        <MudTd>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
-                                 class="img-thumbnail rounded"
-                                 style="max-width: 100px;" />
-                        </MudTd>
-                        <MudTd>@context.Name</MudTd>
-                        <MudTd>@context.Color</MudTd>
-                       <MudTd>@context.Size</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudTabPanel>
-            <MudTabPanel Text="Rental">
-                <MudTable Class="ma-3" Dense Hover Items="@reservation"
-                          HorizontalScrollbar FixedHeader FixedFooter Height="600px">
-                    <HeaderContent>
-                        @foreach (var header in new[] { "Customer Name", "Photo", "Gown Name", "Color", "Size" })
-                        {
-                            <MudTh>@header</MudTh>
-                        }
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>@context.Fullname</MudTd>
-                        <MudTd>
-                            <img src="data:image/bmp;base64,@Convert.ToBase64String(context.Photo)"
-                                 class="img-thumbnail rounded"
-                                 style="max-width: 100px;" />
-                        </MudTd>
-                        <MudTd>@context.Name</MudTd>
-                        <MudTd>@context.Color</MudTd>
-                        <MudTd>@context.Size</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudTabPanel>
-        </MudTabs>
-
-       }
-       </div>
-
-
-<style>
-    .custom-dialog-title {
-        background-color: #4E3434;
-        color: white;
-    }
-</style>
+    <!-- Main Content -->
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-5">
+            <MudGrid GutterSize="24px">
+                @foreach (var card in DashboardCards)
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudPaper Elevation="6" Class="pa-5 rounded-xl hover:scale-105 transition-all duration-300" Style="background:linear-gradient(to right, #f7e1d7, #e8cbc0);">
+                            <MudGrid AlignItems="Center">
+                                <MudItem xs="4">
+                                    <MudIcon Icon="@card.Icon" Color="@card.Color" Style="font-size:3.5rem;" />
+                                </MudItem>
+                                <MudItem xs="8">
+                                    <MudText Typo="Typo.h5" Class="font-bold">@card.Value</MudText>
+                                    <MudText Typo="Typo.subtitle2">@card.Label</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
 @code {
-    private Gowns[]? gown;
-    private Reservation[]? reservation;
-    [Parameter] public Gowns _gowns { get; set; } = new();
-    [Parameter] public Image _image { get; set; } = new();
-    bool fixed_header = true, fixed_footer = false;
-    public string imgsrc { get; set; } = "";
-    [Parameter] public byte[] _filebytes { get; set; } = null!;
-    [Parameter] public byte[] _photo { get; set; } = null!;
-    IList<IBrowserFile> files = new List<IBrowserFile>();
-    public Position Position { get; set; } = Position.Left;
+    private bool _open = true;
+    private Breakpoint _breakpoint = Breakpoint.Lg;
+    private int availableGowns;
+    private int pendingGowns;
+    private int rentedGowns;
+    private int returnedGowns;
 
-    private async Task Submit()
+    private void ToggleDrawer() => _open = !_open;
+
+    protected override async Task OnInitializedAsync()
     {
-        try
+        await CountAvailableGowns();
+        await CountPendingGowns();
+        await CountRentedGowns();
+        await CountReturnedGowns();
+    }
+
+    private async Task CountGowns(string endpoint, Action<int> setter)
+    {
+        using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+        var response = await client.GetAsync($"api/Gown/{endpoint}");
+        if (response.IsSuccessStatusCode)
         {
-            var gown = new Gowns
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Photo = _photo,
-                    Name = _gowns.Name,
-                    Type = _gowns.Type,
-                    Color = _gowns.Color,
-                    Size = _gowns.Size,
-                    Fee = _gowns.Fee,
-                    Status = "Available"
-                };
-            var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
-                .PostAsJsonAsync("api/Gown/AddGown", gown);
-            var result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
-            var isSuccess = response.IsSuccessStatusCode && result > 0;
-            SnackBar.Add(
-                isSuccess ? "Done: Successfully Saved!" : $"Warning: {response.ReasonPhrase}",
-                isSuccess ? Severity.Success : Severity.Warning
-            );
-        }
-        catch (Exception ex)
-        {
-            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        }
-    }
-
-    protected override void OnInitialized()
-    {
-        if (_image.img64 != null && _image.img64.Length > 0)
-        {
-            imgsrc = string.Format($"data:image/png;base64,{_image.img64}");
-        }
-    }
-
-    private async void UploadFiles(IBrowserFile file)
-    {
-        files.Add(file);
-        var memoryStream = new MemoryStream();
-        await file.OpenReadStream(file.Size).CopyToAsync(memoryStream);
-        _filebytes = memoryStream.ToArray();
-        _photo = GetImage(Convert.ToBase64String(_filebytes));
-        imgsrc = string.Format("data:image/jpg;base64,{0}", Convert.ToBase64String(_photo));
-        StateHasChanged();
-    }
-
-    private async Task clearImg()
-    {
-        var photos = GetImage(_image.img64);
-
-        imgsrc = string.Format("data:image/jpg;base64,{0}", Convert.ToBase64String(photos));
-        StateHasChanged();
-
-    }
-
-    public byte[] GetImage(string sBase64String)
-    {
-        byte[] bytes = null;
-        if (!string.IsNullOrEmpty(sBase64String))
-        {
-            bytes = Convert.FromBase64String(sBase64String);
-        }
-        return bytes;
-
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await LoadGown();
-            await LoadReservation();
-    }
-
-    private async Task Update(string id)
-    {
-        var parameters = new DialogParameters();
-        var update = gown.FirstOrDefault(_ => _.Id == id);
-        parameters.Add("_gowns", update);
-
-        var options = new DialogOptions
-            {
-                MaxWidth = MaxWidth.Small, 
-                FullWidth = true
-            };
-
-        var dialog = await Dialog.Show<UpdateGown>("Update", parameters, options).Result;
-
-    }
-
-    private async Task LoadGown()
-    {
-        try
-        {
-            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
-            var response = await client.GetAsync("api/Gown/Gowns");
-            if (!response.IsSuccessStatusCode) return;
-
-            await Task.Delay(1000);
-            gown = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+            var count = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
+            setter(count);
             StateHasChanged();
         }
-        catch (Exception ex)
-        {
-            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        }
     }
 
-    private async Task LoadReservation()
+    public Task CountAvailableGowns() => CountGowns("CountAvailableGowns", val => availableGowns = val);
+    public Task CountPendingGowns() => CountGowns("CountPendingGowns", val => pendingGowns = val);
+    public Task CountRentedGowns() => CountGowns("CountRentedGowns", val => rentedGowns = val);
+    public Task CountReturnedGowns() => CountGowns("CountReturnedGowns", val => returnedGowns = val);
+
+    public class DashboardCard
     {
-        try
-        {
-            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
-            var response = await client.GetAsync("api/Reservation/Reservations");
-            if (!response.IsSuccessStatusCode) return;
-
-            await Task.Delay(1000);
-            reservation = JsonConvert.DeserializeObject<Reservation[]>(await response.Content.ReadAsStringAsync());
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
-        }
+        public string Icon { get; set; }
+        public Color Color { get; set; }
+        public string Value { get; set; }
+        public string Label { get; set; }
     }
 
-    public void OnValidSubmit(EditContext context)
+    private List<DashboardCard> DashboardCards => new()
     {
-
-    }
+        new() { Icon = Icons.Material.Outlined.EventAvailable, Color = Color.Success, Value = availableGowns.ToString(), Label = "Available Gowns" },
+        new() { Icon = Icons.Material.Outlined.Pending, Color = Color.Warning, Value = pendingGowns.ToString(), Label = "Pending Gowns" },
+        new() { Icon = Icons.Material.Outlined.ShoppingCart, Color = Color.Primary, Value = rentedGowns.ToString(), Label = "Rented Gowns" },
+        new() { Icon = Icons.Material.Outlined.AssignmentReturn, Color = Color.Tertiary, Value = returnedGowns.ToString(), Label = "Returned Gowns" },
+    };
 }

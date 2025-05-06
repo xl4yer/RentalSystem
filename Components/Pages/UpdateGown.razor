@@ -1,8 +1,8 @@
 ﻿
 <style>
     .custom-dialog-title {
-        background-color: #4E3434;
-        color: white;
+    background-color: #4E3434;
+    color: white;
     }
 </style>
 
@@ -51,10 +51,10 @@
                         <MudSelectItem Value="@status" />
                     }
                 </MudSelect>
-            </MudContainer>
+            </MudContainer> <br />
             <MudToolBar>
                 <MudSpacer />
-                <MudButton FullWidth>Cancel</MudButton>
+                <MudButton FullWidth @onclick="Cancel">Cancel</MudButton>
                 <MudButton FullWidth Variant="Variant.Filled" @onclick="Submit" Style="background-color:#4E3434; color:white">Update</MudButton>
             </MudToolBar>
         </DialogContent>
@@ -75,6 +75,11 @@
 
     }
 
+    void Cancel()
+    {
+        MudDialog.Close();
+    }
+
     private async  Task Submit()
     {
         try
@@ -87,7 +92,8 @@
                     Type = _gowns.Type,
                     Color = _gowns.Color,
                     Size = _gowns.Size,
-                    Fee = _gowns.Fee
+                    Fee = _gowns.Fee,
+                    Status = _gowns.Status
                 };
             var response = await new HttpClient { BaseAddress = new Uri(Nav.BaseUri) }
                 .PutAsJsonAsync("api/Gown/UpdateGown", gown);
@@ -97,6 +103,7 @@
                 isSuccess ? "Done: Successfully Updated!" : $"Warning: {response.ReasonPhrase}",
                 isSuccess ? Severity.Success : Severity.Warning
             );
+            MudDialog.Close();
         }
         catch (Exception ex)
         {

@@ -9,9 +9,12 @@
   <ItemGroup>
     <PackageReference Include="BlazorCaptcha" Version="1.7.1" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+    <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.36" />
     <PackageReference Include="MudBlazor" Version="8.4.0" />
     <PackageReference Include="MySql.Data" Version="9.2.0" />
+    <PackageReference Include="Neodynamic.Blazor.JSPrintManager" Version="7.0.24.521" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
   </ItemGroup>

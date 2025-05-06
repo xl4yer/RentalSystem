@@ -6,53 +6,52 @@ using System.Data;
 
 namespace RentalSystem.Services
 {
-    public class ReservationServices
+    public class RentalServices
     {
         private readonly AppDb _constring;
         public IConfiguration Configuration;
         private readonly AppSettings _appSetting;
 
-        public ReservationServices(AppDb constring, IConfiguration configuration, IOptions<AppSettings> appSettings)
+        public RentalServices(AppDb constring, IConfiguration configuration, IOptions<AppSettings> appSettings)
         {
             _constring = constring;
             Configuration = configuration;
             _appSetting = appSettings.Value;
         }
 
-        public async Task<List<Reservation>> Reservations()
+        public async Task<List<Rentals>> Rentals()
         {
-            List<Reservation> reservation = new List<Reservation>();
+            List<Rentals> rentals = new List<Rentals>();
             using (var con = new MySqlConnection(_constring.GetConnection()))
             {
                 try
                 {
                     await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("ViewReservation", con)
+                    var com = new MySqlCommand("ViewRentals", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };
                     var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
                     while (await rdr.ReadAsync().ConfigureAwait(false))
                     {
-                        reservation.Add(new Reservation
+                        rentals.Add(new Rentals
                         {
                             Id = rdr["Id"].ToString(),
-                            Fullname = rdr["Fullname"].ToString(),
                             GownId = rdr["GownId"].ToString(),
                             UserId = rdr["UserId"].ToString(),
+                            Fullname = rdr["Fullname"].ToString(),
                             Date = Convert.ToDateTime(rdr["Date"]),
-                            PickupDate = Convert.ToDateTime(rdr["PickupDate"]),
+                            DueDate = Convert.ToDateTime(rdr["DueDate"]),
                             Type = rdr["Type"].ToString(),
                             Photo = rdr["Photo"] as byte[],
                             Name = rdr["Name"].ToString(),
                             Color = rdr["Color"].ToString(),
                             Size = rdr["Size"].ToString(),
-                            PaymentMethod = rdr["PaymentMethod"].ToString(),
-                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
-                            Receipt = rdr["Receipt"] as byte[],
-                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            RentalFee = Convert.ToDouble(rdr["RentalFee"]),
+                            Penalty = Convert.ToDouble(rdr["Penalty"]),
                             Status = rdr["Status"].ToString(),
                         });
+                       
                     }
                     await rdr.CloseAsync().ConfigureAwait(false);
                 }
@@ -65,38 +64,42 @@ namespace RentalSystem.Services
                     await con.CloseAsync().ConfigureAwait(false);
                 }
             }
-            return reservation;
+            return rentals;
         }
 
-
-        public async Task<List<Reservation>> Receipt()
+        public async Task<List<Rentals>> SearchRentals(string search)
         {
-            List<Reservation> receipt = new List<Reservation>();
+            List<Rentals> rentals = new List<Rentals>();
             using (var con = new MySqlConnection(_constring.GetConnection()))
             {
                 try
                 {
                     await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("Receipt", con)
+                    var com = new MySqlCommand("SearchRentals", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };
+                    com.Parameters.AddWithValue("search", search);
                     var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
                     while (await rdr.ReadAsync().ConfigureAwait(false))
                     {
-                        receipt.Add(new Reservation
+                        rentals.Add(new Rentals
                         {
                             Id = rdr["Id"].ToString(),
-                            RentalFee = Convert.ToDouble(rdr["RentalFee"]),
-                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
+                            GownId = rdr["GownId"].ToString(),
+                            UserId = rdr["UserId"].ToString(),
                             Fullname = rdr["Fullname"].ToString(),
+                            Date = Convert.ToDateTime(rdr["Date"]),
+                            DueDate = Convert.ToDateTime(rdr["DueDate"]),
+                            Type = rdr["Type"].ToString(),
+                            Photo = rdr["Photo"] as byte[],
                             Name = rdr["Name"].ToString(),
                             Color = rdr["Color"].ToString(),
                             Size = rdr["Size"].ToString(),
-                            Type = rdr["Type"].ToString(),
-                            Fee = Convert.ToDouble(rdr["Fee"]),
-                            DueDate = Convert.ToDateTime(rdr["DueDate"]),
+                            RentalFee = Convert.ToDouble(rdr["RentalFee"]),
+                            Status = rdr["Status"].ToString(),
                         });
+
                     }
                     await rdr.CloseAsync().ConfigureAwait(false);
                 }
@@ -109,52 +112,18 @@ namespace RentalSystem.Services
                     await con.CloseAsync().ConfigureAwait(false);
                 }
             }
-            return receipt;
+            return rentals;
         }
 
-        public async Task<int> AddReservation(Reservation reservation)
+        public async Task<List<Rentals>> UserRentals(string UserId)
         {
+            List<Rentals> rentals = new List<Rentals>();
             using (var con = new MySqlConnection(_constring.GetConnection()))
             {
                 try
                 {
                     await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("AddReservation", con)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                    };
-                    com.Parameters.AddWithValue("_Id", reservation.Id);
-                    com.Parameters.AddWithValue("_GownId", reservation.GownId);
-                    com.Parameters.AddWithValue("_UserId", reservation.UserId);
-                    com.Parameters.AddWithValue("_Date", reservation.Date);
-                    com.Parameters.AddWithValue("_PickupDate", reservation.PickupDate);
-                    com.Parameters.AddWithValue("_PaymentMethod", reservation.PaymentMethod);
-                    com.Parameters.AddWithValue("_ReservationFee", reservation.ReservationFee);
-                    com.Parameters.AddWithValue("_Receipt", reservation.Receipt);
-                    com.Parameters.AddWithValue("_Status", reservation.Status);
-                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                finally
-                {
-                    await con.CloseAsync().ConfigureAwait(false);
-                }
-            }
-            return 0;
-        }
-
-        public async Task<List<Reservation>> UserReservations(string UserId)
-        {
-            List<Reservation> reservation = new List<Reservation>();
-            using (var con = new MySqlConnection(_constring.GetConnection()))
-            {
-                try
-                {
-                    await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("UserReservations", con)
+                    var com = new MySqlCommand("UserRentals", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };
@@ -162,25 +131,21 @@ namespace RentalSystem.Services
                     var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
                     while (await rdr.ReadAsync().ConfigureAwait(false))
                     {
-                        reservation.Add(new Reservation
+                        rentals.Add(new Rentals
                         {
                             Id = rdr["Id"].ToString(),
                             Fullname = rdr["Fullname"].ToString(),
-                            GownId = rdr["GownId"].ToString(),
-                            UserId = rdr["UserId"].ToString(),
                             Date = Convert.ToDateTime(rdr["Date"]),
-                            PickupDate = Convert.ToDateTime(rdr["PickupDate"]),
+                            DueDate = Convert.ToDateTime(rdr["DueDate"]),
                             Type = rdr["Type"].ToString(),
                             Photo = rdr["Photo"] as byte[],
                             Name = rdr["Name"].ToString(),
                             Color = rdr["Color"].ToString(),
                             Size = rdr["Size"].ToString(),
-                            PaymentMethod = rdr["PaymentMethod"].ToString(),
-                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
-                            Receipt = rdr["Receipt"] as byte[],
-                            Fee = Convert.ToDouble(rdr["Fee"]),
+                            RentalFee = Convert.ToDouble(rdr["RentalFee"]),
                             Status = rdr["Status"].ToString(),
                         });
+
                     }
                     await rdr.CloseAsync().ConfigureAwait(false);
                 }
@@ -193,22 +158,28 @@ namespace RentalSystem.Services
                     await con.CloseAsync().ConfigureAwait(false);
                 }
             }
-            return reservation;
+            return rentals;
         }
 
-        public async Task<int> ApproveReservation(Reservation reservation)
+        public async Task<int> AddRental(Rentals rentals)
         {
             using (var con = new MySqlConnection(_constring.GetConnection()))
             {
                 try
                 {
                     await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("ApproveReservation", con)
+                    var com = new MySqlCommand("AddRental", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };
-                    com.Parameters.AddWithValue("_ReservationId", reservation.Id);
-                    com.Parameters.AddWithValue("_Status", reservation.Status);
+                    com.Parameters.AddWithValue("_Id", rentals.Id);
+                    com.Parameters.AddWithValue("_GownId", rentals.GownId);
+                    com.Parameters.AddWithValue("_UserId", rentals.UserId);
+                    com.Parameters.AddWithValue("_Date", rentals.Date);
+                    com.Parameters.AddWithValue("_DueDate", rentals.DueDate);
+                    com.Parameters.AddWithValue("_RentalFee", rentals.RentalFee);
+                    com.Parameters.AddWithValue("_Status", rentals.Status);
+                    com.Parameters.AddWithValue("_Penalty", rentals.Penalty);
                     return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -223,43 +194,26 @@ namespace RentalSystem.Services
             return 0;
         }
 
-        public async Task<List<Reservation>> SearchReservation(string search)
+        public async Task<int>Returned(Rentals rentals)
         {
-            List<Reservation> reservation = new List<Reservation>();
             using (var con = new MySqlConnection(_constring.GetConnection()))
             {
                 try
-                { 
+                {
                     await con.OpenAsync().ConfigureAwait(false);
-                    var com = new MySqlCommand("SearchReservation", con)
+                    var com = new MySqlCommand("Returned", con)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };
-                    com.Parameters.Clear();
-                    com.Parameters.AddWithValue("search", search);
-                    com.Parameters.AddWithValue("@searchWildcard", $"{search}%");
-                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
-                    while (await rdr.ReadAsync().ConfigureAwait(false))
-                    {
-                        reservation.Add(new Reservation
-                        {
-                            Id = rdr["Id"].ToString(),
-                            Fullname = rdr["Fullname"].ToString(),
-                            Date = Convert.ToDateTime(rdr["Date"]),
-                            PickupDate = Convert.ToDateTime(rdr["PickupDate"]),
-                            Type = rdr["Type"].ToString(),
-                            Photo = rdr["Photo"] as byte[],
-                            Name = rdr["Name"].ToString(),
-                            Color = rdr["Color"].ToString(),
-                            Size = rdr["Size"].ToString(),
-                            PaymentMethod = rdr["PaymentMethod"].ToString(),
-                            ReservationFee = Convert.ToDouble(rdr["ReservationFee"]),
-                            Receipt = rdr["Receipt"] as byte[],
-                            Fee = Convert.ToDouble(rdr["Fee"]),
-                            Status = rdr["Status"].ToString(),
-                        });
-                    }
-                    await rdr.CloseAsync().ConfigureAwait(false);
+                    com.Parameters.AddWithValue("_Id", rentals.Id);
+                    com.Parameters.AddWithValue("_GownId", rentals.GownId);
+                    com.Parameters.AddWithValue("_UserId", rentals.UserId);
+                    com.Parameters.AddWithValue("_Date", rentals.Date);
+                    com.Parameters.AddWithValue("_DueDate", rentals.DueDate);
+                    com.Parameters.AddWithValue("_RentalFee", rentals.RentalFee);
+                    com.Parameters.AddWithValue("_Status", rentals.Status);
+                    com.Parameters.AddWithValue("_Penalty", rentals.Penalty);
+                    return await com.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -270,8 +224,8 @@ namespace RentalSystem.Services
                     await con.CloseAsync().ConfigureAwait(false);
                 }
             }
-            return reservation;
+            return 0;
         }
-
     }
 }
+

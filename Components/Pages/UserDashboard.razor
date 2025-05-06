@@ -1,0 +1,406 @@
+﻿@page "/userdashboard"
+@rendermode InteractiveServer
+
+<PageTitle>Dashboard</PageTitle>
+<HeadContent>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</HeadContent>
+
+<style>
+
+    @@media (max-width: 767px) {
+    .container .row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1rem;
+    }
+
+    .container .row > .col {
+    flex: 0 0 auto;
+    width: 50%;
+    }
+    }
+
+    .d-flex {
+    padding-top: 250px;
+    }
+
+    /*   .card-img-top{
+    height: 270px;
+    object-fit: cover;
+    } */
+</style>
+
+<NewNavMenu />
+
+<div class="container">
+    @if (gowns == null)
+    {
+        <div class="d-flex justify-content-center my-4">
+            <div class="loader"></div>
+        </div>
+    }
+    else if (gowns.Length == 0)
+    {
+        <NewNavMenu />
+
+        <MudGrid Justify="Justify.Center" Class="mt-10 px-4">
+            <MudItem xs="12" sm="6" class="p-2">
+                <MudFab StartIcon="@Icons.Material.Filled.Info" @onclick="MyReservations" Style="width:100%; background-color:#4E3434; color:white;" Label="My Reservations" />
+            </MudItem>
+            <MudItem xs="12" sm="6" class="p-2">
+                <MudFab StartIcon="@Icons.Material.Filled.CheckBox" @onclick="MyRentals" Style="width:100%;  background-color:#4E3434; color:white;" Label="My Rentals" />
+            </MudItem>
+        </MudGrid>
+        <br>
+        <MudToolBar>
+
+            <MudMenu Label="Categories" Dense="true">
+                <MudMenu Label="Type" Dense="true">
+                    @foreach (var type in new[] { "Bridal", "Debut", "Filipiniana", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
+                    {
+                        <MudMenuItem Label="@type" @onclick="() => LoadGownsByType(type)" />
+                    }
+                </MudMenu>
+                <MudMenu Dense="true" Label="Color">
+                    @foreach (var color in new[]
+                   {
+                "Black", "Blue", "Brown", "Cream", "Gold", "Gray & Silver", "Green",
+                "Orange", "Pink", "Nude & Skintone", "Red", "Teal", "Violet & Purple"
+                })
+                    {
+                        <MudMenuItem Label="@color" @onclick="() => LoadGownsByColor(color)" />
+                    }
+                </MudMenu>
+                <MudMenu Dense="true" Label="Size">
+                    @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
+                    {
+                        <MudMenuItem Label="@size" @onclick="() => LoadGownsBySize(size)" />
+                    }
+                </MudMenu>
+            </MudMenu>
+            <MudSpacer />
+
+            <MudButton Variant="Variant.Text" @onclick="SizeChart">Size Chart</MudButton>
+        </MudToolBar>
+        <MudText Typo="Typo.h6" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
+        <center>
+            <MudElement HtmlTag="a"
+                        Class="ms-2"
+                        Style="color: red; font-weight: bold; text-decoration: underline;"
+                        Href="https://maps.app.goo.gl/izHGhJJgT8H4DFy76?g_st=a"
+                        Target="_blank"
+                        Rel="noopener noreferrer">
+                View Our Location - Google Map
+            </MudElement>
+        </center>
+        <br /><br />
+
+        <MudText Align="Align.Center" Typo="Typo.h5">No results found. Please refresh the page.</MudText>
+    }
+    else
+    {
+        <NewNavMenu />
+
+        <MudGrid Justify="Justify.Center" Class="mt-10 px-4">
+            <MudItem xs="12" sm="6" class="p-2">
+                <MudFab StartIcon="@Icons.Material.Filled.Info" @onclick="MyReservations" Style="width:100%; background-color:#4E3434; color:white;" Label="My Reservations" />
+            </MudItem>
+            <MudItem xs="12" sm="6" class="p-2">
+                <MudFab StartIcon="@Icons.Material.Filled.CheckBox" @onclick="MyRentals" Style="width:100%;  background-color:#4E3434; color:white;" Label="My Rentals" />
+            </MudItem>
+        </MudGrid>
+        <br>
+        <MudToolBar>
+
+            <MudMenu Label="Categories" Dense ="true">
+                <MudMenu Label="Type" Dense="true">
+                    @foreach (var type in new[] { "Bridal", "Debut", "Filipiniana", "Prom", "Prenup & Photoshoots", "Sponsors", "Maternity" })
+                    {
+                        <MudMenuItem Label="@type" @onclick="() => LoadGownsByType(type)" />
+                    }
+                </MudMenu>
+                <MudMenu Dense="true" Label="Color">
+                    @foreach (var color in new[]
+                {
+                "Black", "Blue", "Brown", "Cream", "Gold", "Gray & Silver", "Green",
+                "Orange", "Pink", "Nude & Skintone", "Red", "Teal", "Violet & Purple"
+                })
+                    {
+                        <MudMenuItem Label="@color" @onclick="() => LoadGownsByColor(color)" />
+                    }
+                </MudMenu>
+                <MudMenu Dense="true" Label="Size">
+                    @foreach (var size in new[] { "Kids", "XS", "S", "M", "L", "XL", "XXL" })
+                    {
+                        <MudMenuItem Label="@size" @onclick="() => LoadGownsBySize(size)" />
+                    }
+                </MudMenu>
+            </MudMenu>
+            <MudSpacer />
+         
+            <MudButton Variant="Variant.Text" @onclick="SizeChart">Size Chart</MudButton>
+        </MudToolBar>
+        <MudText Typo="Typo.h6" Align="Align.Center" Style="font-family:'Segoe Script';">Available Gowns</MudText>
+        <center>
+        <MudElement HtmlTag="a"
+                    Class="ms-2"
+                    Style="color: red; font-weight: bold; text-decoration: underline;"
+                    Href="https://maps.app.goo.gl/izHGhJJgT8H4DFy76?g_st=a"
+                    Target="_blank"
+                    Rel="noopener noreferrer">
+            View Our Location - Google Map
+        </MudElement>
+        </center>
+        <br />
+        <br />
+      
+        <div class="row row-cols-1 row-cols-md-6 g-4">
+
+            @foreach (var gown in gowns.Take(currentIndex))
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="data:image/bmp;base64, @(Convert.ToBase64String(gown.Photo))"
+                             class="card-img-top"
+                             alt="@gown.Name"
+                             style="height: 350px; object-fit: cover;"> <!-- Adjust height as needed -->
+                        <div class="card-body">
+                            <h5 class="card-title">Name: @gown.Name</h5>
+                            <p>Type: @gown.Type</p>
+                            <h6>Size: @gown.Size</h6>
+                            <p>Color: @gown.Color</p>
+                            <p>Rental Fee: @gown.Fee</p>
+                            <center>
+                                <MudButton Variant="Variant.Filled" T="string" @onclick="() => ReserveNow(gown.Id)"
+                                           Style="background-color:#4E3434; color:white">
+                                    Reserve Now
+                                </MudButton>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+        <br />
+        <br />
+
+        @if (currentIndex < gowns.Length)
+        {
+            <center>
+                <div>
+                    <MudButton Disabled="@_loading" OnClick="loadMore" Variant="Variant.Filled" Style="background-color:#4E3434; color:white">
+                        @if (_loading)
+                        {
+                            <div class="loader"></div>
+                        }
+                        else
+                        {
+                            <MudText>Load More</MudText>
+                        }
+                    </MudButton>
+                </div>
+            </center>
+        }
+    }
+</div>
+
+@code {
+    private Gowns[] gowns;
+    private int currentIndex = 24;
+    private const int PageSize = 24;
+    private bool _loading = false;
+    private string txtsearch { get; set; } = string.Empty;
+    private string token;
+ 
+
+    protected HubConnection hubConnection;
+
+    protected async override Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/hub"))
+            .Build();
+
+        hubConnection.On("client", async () =>
+        {
+            await LoadGown();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private Task SizeChart()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true 
+            };
+        return Dialog.ShowAsync<BySize>("Size Chart", options);
+    }
+
+
+    private async Task LoadGownsByType(string type)
+    {
+        await hubConnection.StopAsync();
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Gown/GetGownsByType?type={type}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+    private async Task LoadGownsByColor(string color)
+    {
+        await hubConnection.StopAsync();
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Gown/GetGownsByColor?color={color}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+    private async Task LoadGownsBySize(string size)
+    {
+        await hubConnection.StopAsync();
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync($"api/Gown/GetGownsBySize?size={size}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadGown();
+            token = await Loc.GetItemAsStringAsync("token");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ReserveNow(string Id)
+    {
+        @if (token == null)
+        {
+            var parameters = new DialogParameters();
+            var dialog = await Dialog.Show<Login>("Add New Client").Result;
+
+        }
+        else
+        {
+            var parameters = new DialogParameters();
+            var update = gowns.FirstOrDefault(_ => _.Id == Id);
+            parameters.Add("_gowns", update);
+
+            var options = new DialogOptions
+                {
+                    MaxWidth = MaxWidth.Small,
+                    FullWidth = true,
+                    CloseButton = true,
+                };
+
+            var dialog = await Dialog.Show<ReservationDialog>("Reserve", parameters, options).Result;
+        }
+
+    }
+
+    private async Task LoadGown()
+    {
+
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendClient");
+        }
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync("api/Gown/AvailableGowns");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await Task.Delay(1000);
+                gowns = JsonConvert.DeserializeObject<Gowns[]>(await response.Content.ReadAsStringAsync());
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+        }
+    }
+
+
+    private async void loadMore()
+    {
+        _loading = true;
+        await Task.Delay(1000);
+        currentIndex = Math.Min(currentIndex + PageSize, gowns.Length);
+        StateHasChanged();
+    }
+
+    private Task MyReservations()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        return Dialog.ShowAsync<UserReservations>("User Reservations", options);
+    }
+
+    private Task MyRentals()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+
+        return Dialog.ShowAsync<UserRentals>("User Rentals", options);
+    }
+}

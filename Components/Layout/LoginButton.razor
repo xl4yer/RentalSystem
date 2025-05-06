@@ -2,7 +2,7 @@
 
 @if (token != null)
 {
-    <MudButton Style="color:white" @onclick="Logout" Variant="Variant.Text">Log out</MudButton>
+    <MudButton Style="color:white" @onclick="ForceLogout" Variant="Variant.Text">Log out</MudButton>
 }
 else
 {
@@ -14,7 +14,8 @@ else
     private string token;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender) token = await Loc.GetItemAsStringAsync("token"); StateHasChanged();
+        if (firstRender) token = await Loc.GetItemAsStringAsync("token"); 
+        StateHasChanged();
     }
 
     private Task Login()
@@ -28,4 +29,12 @@ else
         Loc.RemoveItemAsync("token");
         Nav.NavigateTo("/");
     }
-  }
+
+    private async Task ForceLogout()
+    {
+        Logout();
+        await JS.InvokeVoidAsync("forceReload1");
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

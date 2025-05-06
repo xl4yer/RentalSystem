@@ -1,0 +1,146 @@
+﻿@page "/customers"
+@rendermode InteractiveServer
+
+<PageTitle>Customers</PageTitle>
+
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background-color:#4E3434">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        <LoginButton />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
+        <MudDrawerHeader>
+            <MudAvatar style="width:120px; height:120px">
+                <MudImage Src="logo1.png"></MudImage>
+            </MudAvatar>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
+            <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
+            <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
+            <MudNavLink Href="customers" Icon="@Icons.Material.Filled.People">Customers</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer>
+            <div class="container mt-3">
+                @if (user == null)
+                {
+                    <div class="d-flex justify-content-center my-4">
+                        <div class="loader"></div>
+                    </div>
+                }
+                else if (user.Length == 0)
+                {
+                    <div class="text-center my-4 d-flex justify-content-center">
+                        <h1>No records found</h1>
+                    </div>
+                }
+                else
+                {
+                    <MudTable Dense Hover Items="@user" Elevation="1" Style="border-radius:20px"
+                    HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                        <ToolBarContent>
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadUsers">Refresh</MudButton>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search customer's name" Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
+                        </ToolBarContent>
+
+                        <HeaderContent>
+                            @foreach (var header in new[] { "Name", "Address", "Contact", "Email" })
+                            {
+                                <MudTh>@header</MudTh>
+                            }
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Full Name">@context.Fullname</MudTd>
+                            <MudTd DataLabel="Address">@context.Address</MudTd>
+                            <MudTd DataLabel="Contact">@context.Contact</MudTd>
+                            <MudTd DataLabel="Email">@context.Email</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+
+
+@code {
+    private bool _open = true;
+    private Breakpoint _breakpoint = Breakpoint.Lg;
+    private Users[]? user;
+    private string txtsearch { get; set; } = string.Empty;
+
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await LoadUsers();
+    }
+
+    private async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(txtsearch))
+        {
+            SnackBar.Add("Please enter a search term.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Nav.BaseUri);
+                var token = await Loc.GetItemAsStringAsync("token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                string searchQuery = Uri.EscapeDataString(txtsearch);
+                HttpResponseMessage response = await client.GetAsync($"api/User/SearchUsers?search={txtsearch}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string contentResponse = await response.Content.ReadAsStringAsync();
+                    user = JsonConvert.DeserializeObject<Users[]>(contentResponse);
+                    StateHasChanged();
+                }
+                else
+                {
+                    SnackBar.Add($"Warning: {response.StatusCode}", Severity.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+    private async Task LoadUsers()
+    {
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await client.GetAsync("api/User/Users");
+            if (!response.IsSuccessStatusCode) return;
+
+            await Task.Delay(1000);
+            user = JsonConvert.DeserializeObject<Users[]>(await response.Content.ReadAsStringAsync());
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            SnackBar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+   
+}

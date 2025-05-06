@@ -1,11 +1,14 @@
 using Blazored.LocalStorage;
+using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
+using Neodynamic.Blazor;
 using Pos.Services;
 using RentalSystem.Class;
 using RentalSystem.Components;
+using RentalSystem.Hubs;
 using RentalSystem.Services;
 using System.Security.Claims;
 using System.Text;
@@ -22,8 +25,20 @@ builder.Services.AddTransient<AppDb>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<GownServices>();
 builder.Services.AddTransient<ReservationServices>();
+builder.Services.AddTransient<RentalServices>();
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddJSPrintManager();
+builder.Services.AddSweetAlert2();
+
+builder.Services.AddSignalR();
+
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
+
 builder.Services.AddCors(options =>
 {
 
@@ -92,6 +107,7 @@ app.UseCors("NewPolicy");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<Hubs>("/hub");
 app.MapControllers();
 app.UseAntiforgery();
 app.MapRazorComponents<App>()
