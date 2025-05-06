@@ -44,7 +44,33 @@
                         <MudTd DataLabel="Color">@context.Color</MudTd>
                         <MudTd DataLabel="Size">@context.Size</MudTd>
                         <MudTd DataLabel="Pick-up Date">@context.PickupDate?.ToString("d")</MudTd>
-                        <MudTd DataLabel="Status"> <MudChip T="string" Color="@(context.Status == "Approved" ? Color.Success : context.Status == "Declined" ? Color.Secondary : context.Status == "Pending" ? Color.Warning : Color.Tertiary)">@context.Status</MudChip></MudTd>
+                        <MudTd DataLabel="Status">
+                            <div style="display: flex; align-items: center;">
+                                <MudChip T="string"
+                                Color="@(context.Status == "Approved" ? Color.Success :
+                         context.Status == "Declined" ? Color.Secondary :
+                         context.Status == "Pending" ? Color.Warning :
+                         Color.Tertiary)">
+                                    @context.Status
+                                </MudChip>
+
+                                @if (context.Status == "Approved")
+                                {
+                                    <MudElement HtmlTag="a"
+                                                Class="ms-2"
+                                                Style="color: red; font-weight: bold; text-decoration: underline;"
+                                                Href="https://maps.app.goo.gl/izHGhJJgT8H4DFy76?g_st=a"
+                                                Target="_blank"
+                                                Rel="noopener noreferrer">
+                                        Location
+                                    </MudElement>
+
+
+                                }
+                            </div>
+                        </MudTd>
+
+
                     </RowTemplate>
                 </MudTable>
             }

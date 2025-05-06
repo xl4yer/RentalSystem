@@ -15,7 +15,7 @@
         public string Size { get; set; } = "";
         public string PaymentMethod { get; set; } = "";
         public double ReservationFee { get; set; } = 500;
-        public byte[] Receipt { get; set; } = null;
+        public byte[]? Receipt { get; set; } = null;
         public double Fee { get; set; }
         public string Status { get; set; } = "";
         public double RentalFee { get; set; }

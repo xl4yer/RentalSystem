@@ -119,5 +119,48 @@ namespace Pos.Services
                 }
             }
         }
+            public async Task<List<Users>> Users()
+        {
+            List<Users> user = new List<Users>();
+            using (var con = new MySqlConnection(_constring.GetConnection()))
+            {
+                try
+                {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    var com = new MySqlCommand("ViewUsers", con)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+                    var rdr = await com.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await rdr.ReadAsync().ConfigureAwait(false))
+                    {
+                        user.Add(new Users
+                        {
+                            Id = rdr["Id"].ToString(),
+                            Fname = rdr["Fname"].ToString(),
+                            Mname = rdr["Mname"].ToString(),
+                            Lname = rdr["Lname"].ToString(),
+                            Ext = rdr["Ext"].ToString(),
+                            Address = rdr["Address"].ToString(),
+                            Contact = rdr["Contact"].ToString(),
+                            Role = rdr["Role"].ToString(),
+                            UserName = rdr["UserName"].ToString(),
+                            Email = rdr["Email"].ToString()
+                        });
+                    }
+                    await rdr.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    await con.CloseAsync().ConfigureAwait(false);
+                }
+            }
+            return user;
+        }
     }
+    
 }

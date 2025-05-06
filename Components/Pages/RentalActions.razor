@@ -5,12 +5,23 @@
     }
 </style>
 
-
 <MudDialog TitleClass="custom-dialog-title" DisableSidePadding="true">
     <TitleContent><MudText Typo="Typo.h6" Style="color:white">Return Item</MudText></TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px;">
-         <MudText Typo="Typo.body1" Align="Align.Center">Mark As Returned?</MudText>
+            <MudText Typo="Typo.body1" Align="Align.Center">Mark As Returned?</MudText>
+            <p1>Penalty</p1>
+            <MudSelect @bind-Value="@penalty" Margin="Margin.Dense" T="string" Variant="Variant.Outlined">
+                @foreach (var size in new[] { "None", "Damage", "Overdue"})
+                {
+                    <MudSelectItem Value="@size" />
+                }
+            </MudSelect>
+            @if (penalty != "None")
+            {
+                <p1>Fee</p1>
+                <MudNumericField Margin="Margin.Dense" @bind-Value="fee" Variant="Variant.Outlined" />
+            }
         </MudContainer> 
     </DialogContent>
     <DialogActions>
@@ -24,6 +35,9 @@
     [Parameter] public Reservation _reservation { get; set; } = new Reservation();
     [Parameter] public Gowns _gowns { get; set; } = new Gowns();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
+    private string penalty { get; set; } = "None";
+    private double fee { get; set; }
+    bool hide = false;
 
     void Cancel()
     {
@@ -33,32 +47,35 @@
 
     private async Task Confirm()
     {
+        string status = penalty switch
+        {
+            "Damage" => "Returned - Damage",
+            "Overdue" => "Returned - Overdue",
+            _ => "Returned"
+        };
+
+        var rentalUpdate = new Rentals
+            {
+                Id = _rentals.Id,
+                GownId = _rentals.GownId,
+                UserId = _rentals.UserId,
+                Date = _rentals.Date,
+                DueDate = _rentals.DueDate,
+                RentalFee = _rentals.RentalFee,
+                Status = status,
+                Penalty = penalty is "Damage" or "Overdue" ? fee : _rentals.Penalty
+            };
+
         try
         {
             using var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
+            var response = await httpClient.PutAsJsonAsync("api/Rental/Returned", rentalUpdate);
+            int result = await response.Content.ReadFromJsonAsync<int?>() ?? 0;
 
-            var rentalUpdate = new Rentals
-                {
-                    Id = _rentals.Id,
-                    GownId = _rentals.GownId,
-                    UserId = _rentals.UserId,
-                    Date = _rentals.Date,
-                    DueDate = _rentals.DueDate,
-                    RentalFee = _rentals.RentalFee,
-                    Status = "Returned"
-                };
-
-            var rentalResponse = await httpClient.PutAsJsonAsync("api/Rental/Returned", rentalUpdate);
-            int rentalResult = await rentalResponse.Content.ReadFromJsonAsync<int?>() ?? 0;
-
-            if (rentalResponse.IsSuccessStatusCode && rentalResult > 0)
-            {
+            if (response.IsSuccessStatusCode && result > 0)
                 SnackBar.Add("Done: Successfully Returned!", Severity.Success);
-            }
             else
-            {
-                SnackBar.Add($"Warning: Rental update failed. {rentalResponse.ReasonPhrase}", Severity.Warning);
-            }
+                SnackBar.Add($"Warning: Rental update failed. {response.ReasonPhrase}", Severity.Warning);
 
             MudDialog.Close();
         }
@@ -67,7 +84,7 @@
             SnackBar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }
-
-
 }
+
+
     

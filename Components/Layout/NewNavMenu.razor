@@ -3,7 +3,11 @@
 <MudLayout Style="background-color: #ffffff;">
     <MudAppBar Elevation="1" Style="background-color:#4E3434">
         <MudLink Href="/" Class="logo-link">
-            <img src="logo.png" style="height:70px; width:70px" alt="Logo" class="app-logo" />
+            <MudDrawerHeader>
+                <MudAvatar style="width:50px; height:50px">
+                    <MudImage Src="logo1.png"></MudImage>
+                </MudAvatar>
+            </MudDrawerHeader>
         </MudLink>
         <MudSpacer />
         <LoginButton />

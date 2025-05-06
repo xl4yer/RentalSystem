@@ -14,6 +14,7 @@
         public string Color { get; set; } = "";
         public string Size { get; set; } = "";
         public double RentalFee { get; set; }
+        public double Penalty { get; set; }
         public string Status { get; set; } = "";
     }
 }

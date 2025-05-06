@@ -11,13 +11,16 @@
     </MudAppBar>
     <MudDrawer @bind-Open="@_open" Breakpoint="@_breakpoint" Elevation="1" Variant="@DrawerVariant.Responsive">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h6">V.O.W</MudText>
+            <MudAvatar style="width:120px; height:120px">
+                <MudImage Src="logo1.png"></MudImage>
+            </MudAvatar>
         </MudDrawerHeader>
         <MudNavMenu>
             <MudNavLink Href="dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
             <MudNavLink Href="gowns" Icon="@Icons.Material.Filled.Checkroom">Gowns</MudNavLink>
             <MudNavLink Href="reservations" Icon="@Icons.Material.Filled.CalendarToday">Reservations</MudNavLink>
             <MudNavLink Href="rentals" Icon="@Icons.Material.Filled.ShoppingCart">Rentals</MudNavLink>
+            <MudNavLink Href="users" Icon="@Icons.Material.Filled.VerifiedUser">Users</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -31,16 +34,32 @@
                 }
                 else if (rentals.Length == 0)
                 {
-                    <div class="text-center my-4 d-flex justify-content-center">
-                        <h1>No records found</h1>
-                    </div>
+                    <MudTable Dense Hover Items="@rentals" Elevation="1" Style="border-radius:20px"
+                    HorizontalScrollbar FixedHeader FixedFooter Height="600px">
+                        <ToolBarContent>
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadRentals">Refresh</MudButton>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search customer's name" Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
+                        </ToolBarContent>
+
+                        <HeaderContent>
+                            @foreach (var header in new[] { "Date", "Photo", "Customer Name", "Gown Name", "Due Date", "Status", "Action" })
+                            {
+                                <MudTh>@header</MudTh>
+                            }
+                        </HeaderContent>
+                        <RowTemplate>
+
+                        </RowTemplate>
+                    </MudTable>
                 }
                 else
                 {
                     <MudTable Dense Hover Items="@rentals" Elevation="1" Style="border-radius:20px"
                     HorizontalScrollbar FixedHeader FixedFooter Height="600px">
                         <ToolBarContent>
-                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="LoadRentals">Refresh</MudButton>
+                            <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Outlined" @onclick="Refresh">Refresh</MudButton>
                             <MudSpacer />
                             <MudTextField @bind-Value="txtsearch" Clearable Placeholder="Search customer's name" Variant="Variant.Outlined" Margin="Margin.Dense" /> &nbsp;
                             <MudButton Style="background-color:#4E3434; color:white" Variant="Variant.Filled" @onclick="Search">Search</MudButton>
@@ -61,11 +80,20 @@
                             <MudTd DataLabel="Gown Name">@context.Name</MudTd>
                             <MudTd DataLabel="Due Date">@context.DueDate?.ToString("d")</MudTd>
                             <MudTd DataLabel="Status">
-                                <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : context.Status == "Returned" ? Color.Primary : Color.Info)">@context.Status</MudChip></MudTd>
+                                <MudChip T="string" Color="@(context.Status == "OnGoing" ? Color.Success : context.Status == "Returned" ? Color.Primary : context.Status == "Returned - Damage" ? Color.Primary : context.Status == "Returned - Overdue" ? Color.Primary : Color.Info)">@context.Status</MudChip>
+                            </MudTd>
                             <MudTd DataLabel="Status">
-                                @if(context.Status == "Returned")
+                                @if (context.Status == "Returned")
                                 {
                                     <h1>-</h1>
+                                }
+                                else if (context.Status == "Returned - Damage")
+                                {
+                                    <MudButton onclick="() => PrintDamage(context.Id)" Variant="Variant.Filled" Style="font-size:10px" Color="Color.Secondary">Print Receipt</MudButton>
+                                }
+                                else if (context.Status == "Returned - Overdue")
+                                {
+                                    <MudButton onclick="() => PrintOverdue(context.Id)" Variant="Variant.Filled" Style="font-size:10px" Color="Color.Secondary">Print Receipt</MudButton>
                                 }
                                 else
                                 {
@@ -84,9 +112,9 @@
 
 @code {
     private bool _open = true;
+    private Rentals[]? rentals;
     private Breakpoint _breakpoint = Breakpoint.Lg;
     private string txtsearch = string.Empty;
-
     protected HubConnection hubConnection;
 
     protected async override Task OnInitializedAsync()
@@ -103,14 +131,22 @@
         await hubConnection.StartAsync();
     }
 
+    private async Task Refresh()
+    {
+       
+        await LoadRentals();
+    }
+
     public async Task Search()
     {
+
         if (string.IsNullOrWhiteSpace(txtsearch))
         {
             SnackBar.Add("Please enter a search term.", Severity.Warning);
             return;
         }
 
+       
         try
         {
             using (HttpClient client = new HttpClient())
@@ -145,7 +181,7 @@
     {
         _open = !_open;
     }
-    private Rentals[]? rentals;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -153,10 +189,10 @@
     }
     private async Task LoadRentals()
     {
-        if (hubConnection is not null)
-        {
-            await hubConnection.SendAsync("SendClient");
-        }
+        // if (hubConnection is not null)
+        // {
+        //     await hubConnection.SendAsync("SendClient");
+        // }
 
         try
         {
@@ -187,6 +223,36 @@
             };
 
         var dialog = await Dialog.Show<RentalActions>("", parameters, options).Result;
+    }
+
+    private async Task PrintDamage(string id)
+    {
+        var parameters = new DialogParameters();
+        var update = rentals.FirstOrDefault(_ => _.Id == id);
+        parameters.Add("_rentals", update);
+
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+
+        var dialog = await Dialog.Show<DamagePrint>("", parameters, options).Result;
+    }
+
+    private async Task PrintOverdue(string id)
+    {
+        var parameters = new DialogParameters();
+        var update = rentals.FirstOrDefault(_ => _.Id == id);
+        parameters.Add("_rentals", update);
+
+        var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.ExtraSmall,
+                FullWidth = true
+            };
+
+        var dialog = await Dialog.Show<OverduePrint>("", parameters, options).Result;
     }
 
     public async Task AddRental()

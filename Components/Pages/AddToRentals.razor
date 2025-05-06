@@ -13,19 +13,19 @@
     </TitleContent>
     <DialogContent>
         <MudContainer Style="max-height: 650px; padding: 20px;">
-                    <center>
-                    <MudImage Style="height:200px; width:150px" Src="@( $"data:image/bmp;base64,{Convert.ToBase64String(_reservation.Photo)}" )"
-                    Class="reservation-image" />
-                    </center>
+            <center>
+                <MudImage Style="height:200px; width:150px" Src="@( $"data:image/bmp;base64,{Convert.ToBase64String(_reservation.Photo)}" )"
+                Class="reservation-image" />
+            </center>
             <MudText Typo="Typo.subtitle1" Align="Align.Center">Customer Name: <u>@_reservation.Fullname</u></MudText>
             <MudText Typo="Typo.subtitle1" Align="Align.Center">Gown Name: <u>@_reservation.Name</u></MudText>
             <MudText Typo="Typo.subtitle1" Align="Align.Center">Gown Type: <u>@_reservation.Type</u></MudText>
             <MudText Typo="Typo.subtitle1" Align="Align.Center">Color: <u>@_reservation.Color</u></MudText>
             <MudText Typo="Typo.subtitle1" Align="Align.Center">Size: <u>@_reservation.Size</u></MudText>
             <MudText Typo="Typo.subtitle1">Remaining Payment</MudText>
-                    <MudNumericField Margin="Margin.Dense" @bind-Value="remainingFee" ReadOnly  Variant="Variant.Outlined" />
+            <MudNumericField Margin="Margin.Dense" @bind-Value="remainingFee" ReadOnly  Variant="Variant.Outlined" />
             <MudText Typo="Typo.subtitle1" >Select Due Date</MudText>
-                    <MudDatePicker Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="_date" />
+            <MudDatePicker Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Date="_date" />
         </MudContainer>
     </DialogContent>
     <DialogActions>
@@ -58,7 +58,8 @@
                     Date = DateTime.Now,
                     DueDate = _date,
                     RentalFee = remainingFee,
-                    Status = "OnGoing"
+                    Status = "OnGoing",
+                    Penalty = 0
                 };
 
             var httpClient = new HttpClient { BaseAddress = new Uri(Nav.BaseUri) };
